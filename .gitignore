@@ -1,0 +1,5 @@
+http-server
+node_modules
+public
+.byebug_history
+.sass-cache
