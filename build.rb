@@ -8,8 +8,6 @@ require 'webrick'
 $source = File.absolute_path 'app'
 $dest = 'public'
 
-puts "Watching #{$source}"
-
 class Input
   def initialize(input)
     @input = input
@@ -70,14 +68,19 @@ update = ->(modified, added, removed) do
   end
 end
 
-update[Dir[File.join($source, '**/*.{haml,sass}')], [], []]
+if ARGV.first == '--serve'
+  puts "Watching #{$source}"
+  listener = Listen.to($source, :filter => /\.(haml|sass)$/, &update)
+  listener.start
 
-listener = Listen.to($source, :filter => /\.(haml|sass)$/, &update)
-listener.start
+  puts 'Starting server on port 8080'
+  server = WEBrick::HTTPServer.new Port: 8080
+  server.mount '/', WEBrick::HTTPServlet::FileHandler, $dest
+  trap('INT') { server.stop }
+  server.start
 
-puts 'Starting server on port 8080'
-server = WEBrick::HTTPServer.new Port: 8080
-server.mount '/', WEBrick::HTTPServlet::FileHandler, $dest
-trap('INT') { server.stop }
-server.start
+else
+  puts "Updating #{$source}"
+  update[Dir[File.join($source, '**/*.{haml,sass}')], [], []]
+end
 

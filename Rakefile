@@ -3,12 +3,27 @@ task :install do
   sh 'jitsu install http-server'
 end
 
+task :clean do
+  rm_rf 'dist'
+  rm_rf 'public'
+end
+
 directory 'public'
 
-task start: ['public'] do
+task build: ['public'] do
   ln_sf '../app/js', 'public/js'
   ln_sf '../node_modules', 'public/vendor'
-  exec './live-server.rb' 
+  system './build.rb'
+end
+
+task start: [:build] do
+  exec './build.rb --serve' 
+end
+
+directory 'dist'
+
+task package: ['dist'] do
+
 end
 
 require 'jasmine'
