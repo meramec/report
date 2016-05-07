@@ -117,15 +117,19 @@ def report(type, input, output)
   eos
 end
 
+def ordered(files)
+  files.partition {|f| File.extname(f) != '.haml'}.flatten
+end
+
 update = ->(modified, added, removed) do
-  (added + modified).each do |input|
+  ordered(added + modified).each do |input|
     if output = Output.make(input)
       output.create!
       report 'generated', input, output
     end
   end
 
-  removed.each do |input|
+  ordered(removed).each do |input|
     if output = Output.make(input)
       output.remove!
       report 'removed', input, output

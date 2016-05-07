@@ -26,11 +26,12 @@ task :package do
   sh "git clone #{url} dist" unless File.exists?('dist')
   Dir.chdir('dist') do
     sh 'git checkout gh-pages'
+    sh 'git reset --hard origin/gh-pages'
     sh 'git rm -rf *'
   end
   sh './build.rb --dist'
   Dir.chdir('dist') do
-    sh 'git add .'
+    sh 'git add --all .'
     sh "git commit -m 'Deploy to Github Pages: #{sha}'"
     sh "git push origin -u gh-pages"
   end
