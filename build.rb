@@ -67,11 +67,14 @@ class Html < Output
     Haml::Engine.new("%script{ src: '#{file}'}").render
   end
   def js_include_tree(dir)
-    Dir[File.join($dest, dir, '**', '*.js')].map do |file|
+    order_js(Dir[File.join($dest, dir, '**', '*.js')]).map do |file|
       js_include file.sub File.join($dest, ''), ''
     end.join
   end
 
+  def order_js(files)
+    files.partition {|f| File.read(f) =~ /angular\.module\(.*?,\s*\[.*?\]\s*\)/}.flatten
+  end
 end
 
 class Sass < Output
