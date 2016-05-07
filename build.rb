@@ -56,6 +56,14 @@ class Html < Output
   end
 
   def js_include(file)
+    src = file.sub /^vendor\//, 'node_modules/'
+    if File.exists? src
+      out = File.join($dest, file)
+      FileUtils.mkdir_p File.dirname(out)
+      File.open(out, 'w') do |f|
+        f.write File.read(src)
+      end
+    end
     Haml::Engine.new("%script{ src: '#{file}'}").render
   end
   def js_include_tree(dir)

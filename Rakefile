@@ -10,7 +10,6 @@ end
 directory 'public'
 
 task build: ['public'] do
-  ln_sf '../node_modules', 'public/vendor'
   sh './build.rb'
 end
 
