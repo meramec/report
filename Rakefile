@@ -19,17 +19,15 @@ task serve: [:build] do
 end
 
 task :package do
-  rm_rf 'dist'
-  mkdir 'dist'
-
   url = %x(git config --get remote.origin.url).chomp
   sha = %x(git rev-parse --verify HEAD).chomp
 
-  sh "git clone #{url} dist"
+  FileUtils.rm_rf 'dist' unless File.exists?('dist/.git')
+  sh "git clone #{url} dist" unless File.exists?('dist')
   Dir.chdir('dist') do
     sh 'git checkout gh-pages'
+    sh 'git rm -rf *'
   end
-  rm_rf 'dist/*'
   sh './build.rb --dist'
   Dir.chdir('dist') do
     sh 'git add .'
@@ -37,6 +35,7 @@ task :package do
     sh "git push origin -u gh-pages"
   end
 end
+
 
 require 'jasmine'
 load 'jasmine/tasks/jasmine.rake'

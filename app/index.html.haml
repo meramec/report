@@ -1,13 +1,13 @@
 %html
   %head
     %title Report
-    = css_include '/stylesheets/application.css'
+    = css_include 'stylesheets/application.css'
   %body
     %h1{ foo: 'bar' }
       Report
     %p
       Report Generator
 
-  = js_include '/vendor/angular/angular.min.js'
-  = js_include_tree '/js'
+  = js_include 'vendor/angular/angular.min.js'
+  = js_include_tree 'js'
 

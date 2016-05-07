@@ -60,7 +60,7 @@ class Html < Output
   end
   def js_include_tree(dir)
     Dir[File.join($dest, dir, '**', '*.js')].map do |file|
-      js_include file.sub $dest, ''
+      js_include file.sub File.join($dest, ''), ''
     end.join
   end
 
