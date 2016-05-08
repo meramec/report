@@ -1,0 +1,21 @@
+.folder
+  padding: 8px 0px 2px 10px
+
+  > .contents
+    display: none 
+
+  &.open
+    > .contents
+      display: block
+
+.file
+  padding: 6px 0px 2px 10px
+
+.folder, .file
+  > .name
+    color: #444
+    cursor: pointer
+
+    &:hover
+      color: black
+

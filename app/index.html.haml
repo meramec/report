@@ -1,9 +1,9 @@
 %html
   %head
-    %title Report
+    = css_include 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css'
     = css_include_tree 'stylesheets'
   %body{ 'ng-app' => 'ReportGenerator' }
-    %report-title
+    %report-generator
 
   = js_include 'vendor/angular/angular.min.js'
   = js_include_tree 'js'

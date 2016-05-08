@@ -93,7 +93,7 @@ class Sass < Output
     remove! unless @@cleaned
     @@cleaned = true
 
-    File.open(@output, 'a') do |f|
+    File.open(@output, $dist ? 'a' : 'w') do |f|
       f.puts "/* #{@input} */"
       f.write %x(sass #{@input})
       f.puts
@@ -144,7 +144,7 @@ def ordered(files)
 end
 
 def ordered_js(files)
-  files.partition {|f| File.read(f) =~ /angular\.module\(.*?,\s*\[.*?\]\s*\)/}.flatten
+  files.partition {|f| File.read(f) =~ /angular\.module\([^)]*?,\s*\[.*?\]\s*\)/}.flatten
 end
 
 update = ->(modified, added, removed) do

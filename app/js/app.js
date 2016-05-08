@@ -1,3 +1,3 @@
 (function() {
-  var app = angular.module('ReportGenerator', ['report.generator']);
+  var app = angular.module('ReportGenerator', ['report.generator', 'google.api']);
 })();
