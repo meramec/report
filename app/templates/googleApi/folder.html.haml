@@ -1,8 +1,8 @@
 .folder{ 'ng-class' => '{ "open" : folder.open }' }
-  .name{ 'ng-click' => 'onClick($event)' }
+  .name.link{ 'ng-click' => 'onClick($event)' }
     %i.fa{ 'ng-class' => 'folder.open ? "fa-folder-open-o" : "fa-folder-o"'}
     {{ folder.name }}
 
-  .contents
+  .contents{ 'ng-show' => 'folder.open' }
     %folder{ 'ng-repeat' => 'folder in folder.folders' }
     %file{ 'ng-repeat' => 'file in folder.files' }

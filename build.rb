@@ -136,6 +136,8 @@ def of_type(type)
 end
 
 def ordered(files)
+  files = files.uniq
+
   sass = files.select &of_type('.sass')
   js = files.select &of_type('.js')
   haml = files.select &of_type('.haml')
@@ -148,7 +150,11 @@ def ordered_js(files)
 end
 
 update = ->(modified, added, removed) do
-  ordered(added + modified).each do |input|
+  unless added.select {|m| m =~ /\.(js|sass)$/}.empty?
+    modified += Dir[File.join($source, '**/*.haml')]
+  end
+
+  ordered(modified + added).each do |input|
     if output = Output.make(input)
       output.create!
       report 'generated', input, output
