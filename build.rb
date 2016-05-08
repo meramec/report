@@ -54,6 +54,11 @@ class Html < Output
   def css_include(file)
     Haml::Engine.new("%link{ rel: 'stylesheet', type: 'text/css', href: '#{file}'}").render
   end
+  def css_include_tree(dir)
+    Dir[File.join($dest, dir, '**', '*.css')].map do |file|
+      css_include file.sub File.join($dest, ''), ''
+    end.join
+  end
 
   def js_include(file)
     src = file.sub /^vendor\//, 'node_modules/'
@@ -67,14 +72,11 @@ class Html < Output
     Haml::Engine.new("%script{ src: '#{file}'}").render
   end
   def js_include_tree(dir)
-    order_js(Dir[File.join($dest, dir, '**', '*.js')]).map do |file|
+    ordered_js(Dir[File.join($dest, dir, '**', '*.js')]).map do |file|
       js_include file.sub File.join($dest, ''), ''
     end.join
   end
 
-  def order_js(files)
-    files.partition {|f| File.read(f) =~ /angular\.module\(.*?,\s*\[.*?\]\s*\)/}.flatten
-  end
 end
 
 class Sass < Output
@@ -82,7 +84,8 @@ class Sass < Output
   @@cleaned = false
 
   def initialize(input)
-    super input, APPLICATION_CSS
+    output = $dist ? APPLICATION_CSS : File.join($dest, input.sub(File.join($source, ''), '')).sub(/sass$/, 'css')
+    super input, output
   end
 
   protected
@@ -103,7 +106,7 @@ class Javascript < Output
   @@cleaned = false
 
   def initialize(input)
-    output = $dist ? APPLICATION_JS : File.join($dest, 'js', input.sub(File.join($source, 'js', ''), ''))
+    output = $dist ? APPLICATION_JS : File.join($dest, input.sub(File.join($source, ''), ''))
     super input, output
   end
 
@@ -128,8 +131,20 @@ def report(type, input, output)
   eos
 end
 
+def of_type(type)
+  ->(f) { File.extname(f) == type }
+end
+
 def ordered(files)
-  files.partition {|f| File.extname(f) != '.haml'}.flatten
+  sass = files.select &of_type('.sass')
+  js = files.select &of_type('.js')
+  haml = files.select &of_type('.haml')
+
+  sass + ordered_js(js) + haml
+end
+
+def ordered_js(files)
+  files.partition {|f| File.read(f) =~ /angular\.module\(.*?,\s*\[.*?\]\s*\)/}.flatten
 end
 
 update = ->(modified, added, removed) do
