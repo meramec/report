@@ -1,0 +1,10 @@
+<div class='folder' ng-class='{ "open" : folder.open }'>
+  <div class='name' ng-click='onClick($event)'>
+    <i class='fa' ng-class='folder.open ? "fa-folder-open-o" : "fa-folder-o"'></i>
+    {{ folder.name }}
+  </div>
+  <div class='contents'>
+    <folder ng-repeat='folder in folder.folders'></folder>
+    <file ng-repeat='file in folder.files'></file>
+  </div>
+</div>
