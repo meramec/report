@@ -18,8 +18,8 @@
       });
     }
 
-    self.buildTree = function(root, types) {
-      var b = new BuildTree(root, types);
+    self.buildTree = function(drive, types) {
+      var b = new BuildTree(drive, types);
 
       if(loaded) {
         b.begin();
@@ -29,10 +29,10 @@
     }; 
   }
 
-  function BuildTree(root, types) {
+  function BuildTree(drive, types) {
     var self = this;
 
-    root.shared = [];
+    drive.shared = [];
 
     q: "mimeType='application/vnd.google-apps.folder' OR mimeType = 'application/vnd.google-apps.spreadsheet'"
 
@@ -58,8 +58,7 @@
     function getRootFolder() {
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
-        console.log(JSON.stringify(response));
-        root.drive = update(response.id, response);
+        drive.root = update(response.id, response);
       });
     }
 
@@ -73,11 +72,9 @@
 
         if(response.files) {
           _.each(response.files, function(file) {
-            if(file.id === '0AOX3VKWY4GFQUk9PVA') console.log("ROOT");
             if(file.ownedByMe) {
               update(file.id, file);
 
-              if(file.parents);
               _.each(file.parents, function(id) {
                 var p = acquire(id);
                 if(file.mimeType === 'application/vnd.google-apps.folder') {
@@ -87,13 +84,9 @@
                 }
               });
             } else {
-    //          root.shared.push(file);
+              drive.shared.push(file);
             }
           });
-        }
-
-        if(! response.nextPageToken) {
-          console.log(JSON.stringify(root));
         }
       });
     }
@@ -105,6 +98,7 @@
       for(key in file) {
         files[id][key] = file[key];
       }
+      return files[id];
     }
 
     function acquire(id) {
