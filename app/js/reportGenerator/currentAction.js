@@ -8,5 +8,4 @@
       templateUrl: 'templates/reportGenerator/currentAction.html'
     };
   }
-
 })();

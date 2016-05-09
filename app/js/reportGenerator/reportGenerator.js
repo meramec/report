@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('reportGenerator', reportGenerator);
-  angular.module('report.generator').controller('ReportGeneratorController', ['$scope', 'selectAction', ReportGeneratorController]);
+  angular.module('report.generator').controller('ReportGeneratorController', ['$scope', '$timeout', 'selectAction', ReportGeneratorController]);
 
   function reportGenerator() {
     return {
@@ -11,7 +11,16 @@
     };
   }
 
-  function ReportGeneratorController($scope, selectAction) {
+  function ReportGeneratorController($scope, $timeout, selectAction) {
+    $scope.currentAction = '';
+    $scope.$watch('currentAction', function(action) {
+      if(action) {
+        $timeout(function() {
+          $scope.$broadcast(action);
+        });
+      }
+    });
+
     selectAction.browseDrive($scope);
   }
 })();
