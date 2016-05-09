@@ -36,8 +36,9 @@
 
     q: "mimeType='application/vnd.google-apps.folder' OR mimeType = 'application/vnd.google-apps.spreadsheet'"
 
+    var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
     var opts = {
-      fields: 'nextPageToken, files(id,mimeType,name,parents,size,ownedByMe,owners(displayName))'
+      fields: 'nextPageToken, files(' + fields + ')'
     };
 
     if(types) {
@@ -48,10 +49,19 @@
     }
 
     self.begin = function() {
+      getRootFolder();
       getFiles(opts);
     };
 
     var files = {};
+
+    function getRootFolder() {
+      var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
+      request.execute(function(response) {
+        console.log(JSON.stringify(response));
+        root.drive = update(response.id, response);
+      });
+    }
 
     function getFiles(opts) {
       var request = gapi.client.drive.files.list(opts);
@@ -60,29 +70,30 @@
           opts.pageToken = response.nextPageToken;
           getFiles(opts);
         }
-        else console.log(JSON.stringify(root));
 
         if(response.files) {
           _.each(response.files, function(file) {
+            if(file.id === '0AOX3VKWY4GFQUk9PVA') console.log("ROOT");
             if(file.ownedByMe) {
               update(file.id, file);
 
-              if(file.parents) {
-                _.each(file.parents, function(id) {
-                  var p = acquire(id);
-                  if(file.mimeType === 'application/vnd.google-apps.folder') {
-                    p.folders.push(file);
-                  } else {
-                    p.files.push(file);
-                  }
-                });
-              } else {
-                root.drive = file;                
-              }
+              if(file.parents);
+              _.each(file.parents, function(id) {
+                var p = acquire(id);
+                if(file.mimeType === 'application/vnd.google-apps.folder') {
+                  p.folders.push(file);
+                } else {
+                  p.files.push(file);
+                }
+              });
             } else {
-              root.shared.push(file);
+    //          root.shared.push(file);
             }
           });
+        }
+
+        if(! response.nextPageToken) {
+          console.log(JSON.stringify(root));
         }
       });
     }
@@ -94,22 +105,23 @@
       for(key in file) {
         files[id][key] = file[key];
       }
-
-      if(file.mimeType === 'application/vnd.google-apps.folder') {
-        files[id].files = [];
-        files[id].folders = [];
-      }
     }
 
     function acquire(id) {
-      if(files[id]) {
-        return files[id];
-      } else {
-        return files[id] = {
+      if(! files[id]) {
+        files[id] = {
           files: [],
           folders: []
         };
       }
+      var p = files[id];
+
+      if(! p.folders)
+        p.folders = [];
+      if(! p.files)
+        p.files = [];
+
+      return p;
     }
   }
 })();
