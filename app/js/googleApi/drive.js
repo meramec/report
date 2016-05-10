@@ -1,9 +1,8 @@
 (function() {
-  angular.module('google.api').service('client', client);
+  angular.module('google.api').service('drive', drive);
 
   var loaded;
-
-  function client() {
+  function drive() {
     var self = this;
 
     var buildTree;
@@ -41,7 +40,7 @@
     if(types) {
       opts.q += " AND (mimeType='application/vnd.google-apps.folder'";
       _.each(types, function(type) {
-        q += " OR mimeType='" + type + "'";
+        opts.q += " OR mimeType='" + type + "'";
       });
       opts.q += ")";
     }

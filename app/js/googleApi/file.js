@@ -1,6 +1,6 @@
 (function() {
   angular.module('google.api').directive('file', file);
-  angular.module('google.api').controller('FileController', ['$scope', FileController]);
+  angular.module('google.api').controller('FileController', ['$scope', 'selectAction', FileController]);
 
   function file() {
     return {
@@ -11,10 +11,11 @@
     };
   }
 
-  function FileController($scope) {
-
+  function FileController($scope, selectAction) {
     $scope.onClick = function(e) {
       e.stopPropagation();
+
+      selectAction.openSheet($scope, $scope.file);
     };
   }
 })();

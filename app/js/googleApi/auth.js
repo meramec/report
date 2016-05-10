@@ -12,6 +12,10 @@
       getAuthorization(options, callback);
     };
 
+    this.getToken = function() {
+      return gapi.auth.getToken().access_token;
+    };
+
     function getAuthorization(options, callback) {
       gapi.auth.authorize(options, function(result) {
         if(result && ! result.error) {
