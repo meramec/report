@@ -1,3 +1,7 @@
+*
+  margin: 0px
+  padding: 0px
+
 .page
   margin: 26px
 
@@ -14,6 +18,16 @@
     font-size: 1.2em
     font-weight: bold
     margin-bottom: 12px
+
+    li
+      &:before
+        content: ' | '
+      &:first-child:before
+        content: none
+
+    ul li
+      list-style-type: none
+      display: inline
 
   .navigation
     font-style: italic

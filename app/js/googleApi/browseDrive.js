@@ -1,6 +1,6 @@
 (function() {
   angular.module('google.api').directive('browseDrive', browseDrive);
-  angular.module('google.api').controller('BrowseDriveController', ['$scope', '$timeout', 'auth', 'drive', BrowseDriveController]);
+  angular.module('google.api').controller('BrowseDriveController', ['$scope', '$timeout', 'drive', BrowseDriveController]);
 
   function browseDrive() {
     return {
@@ -12,11 +12,7 @@
     };
   }
 
-  function BrowseDriveController($scope, $timeout, auth, drive) {
-    var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
-    var scopes = ['https://www.googleapis.com/auth/drive.metadata.readonly', 'https://spreadsheets.google.com/feeds'];
-
-    auth.authorize(clientId, scopes, onReady);
+  function BrowseDriveController($scope, $timeout, drive) {
 
     $scope.drive = {
 
@@ -29,8 +25,6 @@
       }
     };
 
-    function onReady() {
-      drive.buildTree($scope.drive, ['application/vnd.google-apps.spreadsheet']);
-    }
+    drive.buildTree($scope.drive, ['application/vnd.google-apps.spreadsheet']);
   }
 })();

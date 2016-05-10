@@ -1,30 +1,16 @@
 (function() {
-  angular.module('google.api').service('drive', drive);
+  angular.module('google.api').service('drive', ['client', drive]);
 
   var loaded;
-  function drive() {
+  function drive(client) {
     var self = this;
 
-    var buildTree;
-
-    if(! loaded) {
-      gapi.client.load('drive', 'v3', function() {
-        loaded = true;
-
-        if(buildTree) {
-          buildTree.begin();
-        }
-      });
-    }
+    var lib = client.load('drive', 'v3');
 
     self.buildTree = function(drive, types) {
-      var b = new BuildTree(drive, types);
-
-      if(loaded) {
-        b.begin();
-      } else {
-        buildTree = b;
-      }
+      lib.start(function() {
+        new BuildTree(drive, types).begin();
+      });
     }; 
   }
 

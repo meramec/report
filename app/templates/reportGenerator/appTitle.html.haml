@@ -1,4 +1,11 @@
 .app-title.header-banner
-  .title {{ pageTitle }}
-  .subtitle {{ pageSubtitle }}
+  .title
+    {{ report.title }}
+  .subtitle
+    %ul
+      %li
+        {{ report.subtitle }}
+      %li{ 'ng-repeat' => 'nested in report.nestedSubtitle' }
+        {{ nested }}
   .navigation
+

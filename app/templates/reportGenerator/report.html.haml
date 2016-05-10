@@ -1,0 +1,7 @@
+.report.page
+  %app-title
+
+  .content{ 'ng-switch' => 'report.view' }
+    %sheet-summary{ 'ng-switch-when' => 'sheet' }
+
+  %browse-drive-modal
