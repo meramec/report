@@ -32,20 +32,18 @@
   function BuildTree(drive, types) {
     var self = this;
 
-    drive.shared = [];
-
-    q: "mimeType='application/vnd.google-apps.folder' OR mimeType = 'application/vnd.google-apps.spreadsheet'"
-
     var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
     var opts = {
-      fields: 'nextPageToken, files(' + fields + ')'
+      fields: 'nextPageToken, files(' + fields + ')',
+      q: "trashed=false"
     };
 
     if(types) {
-      opts.q = "mimeType='application/vnd.google-apps.folder'";
+      opts.q += " AND (mimeType='application/vnd.google-apps.folder'";
       _.each(types, function(type) {
         q += " OR mimeType='" + type + "'";
       });
+      opts.q += ")";
     }
 
     self.begin = function() {
@@ -58,7 +56,8 @@
     function getRootFolder() {
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
-        drive.root = update(response.id, response);
+        drive.folders[0] = update(response.result.id, response.result);
+        drive.onChange();
       });
     }
 
@@ -73,7 +72,9 @@
         if(response.files) {
           _.each(response.files, function(file) {
             if(file.ownedByMe) {
-              update(file.id, file);
+              if(file.mimeType === 'application/vnd.google-apps.folder') {
+                file = update(file.id, file);
+              }
 
               _.each(file.parents, function(id) {
                 var p = acquire(id);
@@ -84,11 +85,17 @@
                 }
               });
             } else {
-              drive.shared.push(file);
+              var shared = acquire('shared');
+              update('shared', { name: 'Shared With Me' });
+              drive.folders[1] = shared;
+
+              shared.folders.push(file);
             }
           });
         }
       });
+
+      drive.onChange();
     }
 
     function update(id, file) {

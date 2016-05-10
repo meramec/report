@@ -18,7 +18,18 @@
 
     auth.authorize(clientId, scopes, onReady);
 
-    $scope.drive = {};
+    $scope.drive = {
+
+      folders: [],
+
+      onChange: function() {
+        $timeout(function() {
+          $scope.$digest();
+        });
+      }
+
+    };
+
 
     function onReady() {
       client.buildTree($scope.drive);
