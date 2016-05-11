@@ -1,5 +1,16 @@
 <div class='app-title header-banner'>
-  <div class='title'>{{ pageTitle }}</div>
-  <div class='subtitle'>{{ pageSubtitle }}</div>
+  <div class='title'>
+    {{ report.title }}
+  </div>
+  <div class='subtitle'>
+    <ul class='inline'>
+      <li>
+        {{ report.subtitle }}
+      </li>
+      <li ng-repeat='nested in report.nestedSubtitle'>
+        {{ nested }}
+      </li>
+    </ul>
+  </div>
   <div class='navigation'></div>
 </div>

@@ -1,4 +1,4 @@
-<div class='folder' ng-class='{ "open" : folder.open }'>
+<div class='folder' ng-class='{ "open" : folder.open }' ng-show='!folder.empty'>
   <div class='name link' ng-click='onClick($event)'>
     <i class='fa' ng-class='folder.open ? "fa-folder-open-o" : "fa-folder-o"'></i>
     {{ folder.name }}

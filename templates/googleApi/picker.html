@@ -1,0 +1,31 @@
+<div class='picker' ng-if='openModal'>
+  <div class='overlay'>
+    <div class='modal'>
+      <div class='title-bar'>
+        Choose File
+        <a class='dismiss' ng-click='dismiss()'></a>
+      </div>
+      <div class='pane'>
+        <div class='menu vertical'>
+          <ul class='menu'>
+            <li>
+              <div class='link' ng-class='{ active : showDrive }'>
+                Browse Drive
+              </div>
+            </li>
+            <li>
+              <div class='link' ng-class='{ active: !showDrive }'>
+                Recent
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class='body'>
+          <div class='content'>
+            <browse-drive></browse-drive>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
