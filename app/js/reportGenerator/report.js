@@ -20,7 +20,7 @@
     auth.authorize(onReady);
 
     function onReady() {
-      $scope.$broadcast('browse-drive');
+      $scope.$broadcast('choose-file');
     }
   }
 })();

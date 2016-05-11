@@ -1,0 +1,21 @@
+.picker{ 'ng-if' => 'openModal' }
+  .overlay
+    .modal
+      .title-bar
+        Choose File
+        %a.dismiss{ 'ng-click' => 'dismiss()' }
+
+      .pane
+        .menu.vertical
+
+          %ul.menu
+            %li
+              .link{ 'ng-class' => '{ active : showDrive }' }
+                Browse Drive
+            %li
+              .link{ 'ng-class' => '{ active: !showDrive }' }
+                Recent
+
+        .body
+          .content
+            %browse-drive
