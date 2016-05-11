@@ -20,6 +20,9 @@
 
     drive.buildTree($scope.drive, ['application/vnd.google-apps.spreadsheet'])
       .onChange(function() {
+        if($scope.drive.folders[0])
+          $scope.drive.folders[0].open = true;
+
         $scope.$digest();
       }).onComplete(function() {
 
