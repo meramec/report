@@ -11,7 +11,10 @@
 #   - dist/**/*.js
 #
 src_files:
-  - public/javascripts/**/*.js
+  - node_modules/angular/angular.js
+  - node_modules/angular-mocks/angular-mocks.js
+  - spec/javascripts/spec_helper.js
+  - public/js/**/*.js
 
 # stylesheets
 #
@@ -85,7 +88,6 @@ spec_dir:
 #
 # spec_helper: spec/javascripts/support/jasmine_helper.rb
 #
-spec_helper: spec/javascripts/support/jasmine_helper.rb
 
 # boot_dir
 #
