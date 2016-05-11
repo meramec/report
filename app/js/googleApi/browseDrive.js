@@ -1,6 +1,6 @@
 (function() {
   angular.module('google.api').directive('browseDrive', browseDrive);
-  angular.module('google.api').controller('BrowseDriveController', ['$scope', '$timeout', 'drive', 'me', BrowseDriveController]);
+  angular.module('google.api').controller('BrowseDriveController', ['$scope', 'drive', 'me', BrowseDriveController]);
 
   function browseDrive() {
     return {
@@ -12,19 +12,17 @@
     };
   }
 
-  function BrowseDriveController($scope, $timeout, drive) {
+  function BrowseDriveController($scope, drive) {
 
     $scope.drive = {
-
-      folders: [],
-
-      onChange: function() {
-        $timeout(function() {
-          $scope.$digest();
-        });
-      }
+      folders: []
     };
 
-    drive.buildTree($scope.drive, ['application/vnd.google-apps.spreadsheet']);
+    drive.buildTree($scope.drive, ['application/vnd.google-apps.spreadsheet'])
+      .onChange(function() {
+        $scope.$digest();
+      }).onComplete(function() {
+
+      });
   }
 })();

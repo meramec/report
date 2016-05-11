@@ -5,13 +5,16 @@
     var lib = client.load('drive', 'v3');
 
     this.buildTree = function(drive, types) {
+      var notify = new Notify();
       lib.start(function() {
-        new BuildTree(drive, types).begin();
+        new BuildTree(drive, types, notify).begin();
       });
+
+      return notify;
     }; 
   }
 
-  function BuildTree(drive, types) {
+  function BuildTree(drive, types, notify) {
     var self = this;
 
     var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
@@ -39,7 +42,7 @@
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
         drive.folders[0] = update(response.result.id, response.result);
-        drive.onChange();
+        notify.onNotifyChange();
       });
     }
 
@@ -62,8 +65,12 @@
                 var p = acquire(id);
                 if(file.mimeType === 'application/vnd.google-apps.folder') {
                   p.folders.push(file);
+
+                  if(! file.empty)
+                    setNotEmpty(p);   
                 } else {
                   p.files.push(file);
+                  setNotEmpty(p);
                 }
               });
             } else {
@@ -72,17 +79,23 @@
               drive.folders[1] = shared;
 
               shared.files.push(file);
+              setNotEmpty(shared);
             }
           });
         }
-        drive.onChange();
+        notify.onNotifyChange();
+
+        if(! response.nextPageToken)
+          notify.onNotifyComplete();
       });
 
     }
 
     function update(id, file) {
       if(! files[id]) {
-        files[id] = {};
+        files[id] = {
+          empty: true
+        };
       }
       for(key in file) {
         files[id][key] = file[key];
@@ -94,7 +107,8 @@
       if(! files[id]) {
         files[id] = {
           files: [],
-          folders: []
+          folders: [],
+          empty: true
         };
       }
       var p = files[id];
@@ -106,5 +120,26 @@
 
       return p;
     }
+
+    function setNotEmpty(folder) {
+      folder.empty = false;
+      _.each(folder.parents, function(id) {
+        if(files[id])
+          setNotEmpty(files[id]);
+      });
+    }
   }
+
+  function Notify() {
+    var self = this;
+    this.onChange = function(callback) {
+      self.onNotifyChange = callback;
+      return self;
+    }
+    this.onComplete = function(callback) {
+      self.onNotifyComplete = callback;
+      return self;
+    }
+  }
+
 })();

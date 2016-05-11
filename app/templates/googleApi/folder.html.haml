@@ -1,4 +1,4 @@
-.folder{ 'ng-class' => '{ "open" : folder.open }' }
+.folder{ 'ng-class' => '{ "open" : folder.open }', 'ng-show' => '!folder.empty' }
   .name.link{ 'ng-click' => 'onClick($event)' }
     %i.fa{ 'ng-class' => 'folder.open ? "fa-folder-open-o" : "fa-folder-o"'}
     {{ folder.name }}
