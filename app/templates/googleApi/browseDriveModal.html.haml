@@ -1,6 +1,17 @@
 .browse-drive-modal{ 'ng-if' => 'openModal' }
   .overlay
     .modal
-      .title Choose Spreadsheet
 
-      %browse-drive
+      .heading.vertical
+
+        %ul.menu
+          %li
+            .link{ 'ng-class' => '{ active : showDrive }' }
+              Browse Drive
+          %li
+            .link{ 'ng-class' => '{ active: !showDrive }' }
+              Recent
+
+      .body
+        .content
+          %browse-drive

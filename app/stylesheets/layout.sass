@@ -2,6 +2,9 @@
   margin: 0px
   padding: 0px
 
+body
+  font-family: sans-serif
+
 .page
   margin: 26px
 
@@ -19,16 +22,6 @@
     font-weight: bold
     margin-bottom: 12px
 
-    li
-      &:before
-        content: ' | '
-      &:first-child:before
-        content: none
-
-    ul li
-      list-style-type: none
-      display: inline
-
   .navigation
     font-style: italic
     font-size: 1.1em
@@ -40,6 +33,51 @@
   padding-left: 8px
   color: gray
 
-  &:hover
+  &:not(.disabled):hover
     color: black
+
+.vertical
+  height: 100%
+  vertical-align: top
+
+.heading
+  background-color: #eee
+  box-shadow: 2px 0px 2px #ccc
+
+ul.inline
+  &, li
+    list-style-type: none
+    display: inline
+
+  li
+    padding-left: 0px
+    &:before
+      content: ' | '
+    &:first-child:before
+      content: none
+
+ul.menu
+  display: inline-block
+  table-layout: fixed
+
+  &, li
+    list-style-type: none
+
+  li
+    .link
+      padding: 10px 20px 10px 20px
+      overflow: hidden
+      background-color: #88a
+      color: #fff
+
+      &:hover
+        background-color: #779
+        color: #fff
+
+      &.active
+        background-color: #448
+
+      &.active:hover
+        background-color: #337
+        
 

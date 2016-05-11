@@ -1,5 +1,5 @@
 (function() {
-  angular.module('google.api').service('auth', auth);
+  angular.module('google.api').service('auth', ['$http', auth]);
 
   var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
   var scopes = [
@@ -16,7 +16,8 @@
       onAuthorize();
   };
 
-  function auth() {
+  function auth($http) {
+
     this.authorize = function(callback) {
       var options = {
         client_id: clientId,

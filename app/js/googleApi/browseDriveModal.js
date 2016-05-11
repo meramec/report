@@ -8,14 +8,18 @@
       replace: true,
       templateUrl: 'templates/googleApi/browseDriveModal.html',
       controller: 'BrowseDriveModalController',
-      scope: {}
+      scope: true
     };
   }
 
   function BrowseDriveModalController($scope, $timeout) {
+    $scope.showDrive = true;
+
     $scope.$on('browse-drive', function() {
       $scope.openModal = true;
-      $scope.$digest();
+      $timeout(function() {
+        $scope.$digest();
+      });
     });
   }
 

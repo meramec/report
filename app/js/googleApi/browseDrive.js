@@ -1,6 +1,6 @@
 (function() {
   angular.module('google.api').directive('browseDrive', browseDrive);
-  angular.module('google.api').controller('BrowseDriveController', ['$scope', '$timeout', 'drive', BrowseDriveController]);
+  angular.module('google.api').controller('BrowseDriveController', ['$scope', '$timeout', 'drive', 'me', BrowseDriveController]);
 
   function browseDrive() {
     return {

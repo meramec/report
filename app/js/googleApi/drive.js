@@ -1,13 +1,10 @@
 (function() {
   angular.module('google.api').service('drive', ['client', drive]);
 
-  var loaded;
   function drive(client) {
-    var self = this;
-
     var lib = client.load('drive', 'v3');
 
-    self.buildTree = function(drive, types) {
+    this.buildTree = function(drive, types) {
       lib.start(function() {
         new BuildTree(drive, types).begin();
       });
@@ -74,13 +71,13 @@
               update('shared', { name: 'Shared With Me' });
               drive.folders[1] = shared;
 
-              shared.folders.push(file);
+              shared.files.push(file);
             }
           });
         }
+        drive.onChange();
       });
 
-      drive.onChange();
     }
 
     function update(id, file) {
