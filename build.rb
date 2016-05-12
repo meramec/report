@@ -174,9 +174,16 @@ if $serve
   listener = Listen.to($source, :filter => /\.(haml|sass|js)$/, &update)
   listener.start
 
+  class NoCacheFileHandler < WEBrick::HTTPServlet::FileHandler
+    def do_GET(req, res)
+      super
+      res['Cache-Control'] = 'no-cache'
+    end
+  end
+
   puts 'Starting server on port 8080'
   server = WEBrick::HTTPServer.new Port: 8080
-  server.mount '/', WEBrick::HTTPServlet::FileHandler, $dest
+  server.mount '/', NoCacheFileHandler, $dest
   trap('INT') { server.stop }
   server.start
 else

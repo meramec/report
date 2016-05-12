@@ -1,6 +1,7 @@
 .picker{ 'ng-if' => 'openModal' }
   .overlay
     .modal
+
       .title-bar
         Choose File
         %a.dismiss{ 'ng-click' => 'dismiss()' }
@@ -19,3 +20,4 @@
         .body
           .content
             %browse-drive
+

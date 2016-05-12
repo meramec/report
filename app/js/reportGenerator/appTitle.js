@@ -14,7 +14,7 @@
   function AppTitleController($scope, $window) {
 
     function updateTitle() {
-      $window.document.title = $scope.pageTitle + ' | ' + $scope.pageSubtitle;
+      $window.document.title = $scope.report.title + ' | ' + $scope.report.subtitle;
     }
 
     updateTitle();

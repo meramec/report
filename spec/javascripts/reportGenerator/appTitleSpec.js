@@ -4,16 +4,21 @@ describe('AppTitle', function() {
     document: {}
   };
 
+  var title = 'page title';
+  var subtitle = 'page subtitle';
+
   beforeEach(function() {
-    this.scope.pageTitle = 'page title';
-    this.scope.pageSubtitle = 'page subtitle';
+    this.scope.report = {
+      title: title,
+      subtitle: subtitle
+    };
 
     this.controller('AppTitleController', { $scope: this.scope, $window: myWindow });
   });
 
   describe('on creation', function() {
     it('sets the window title', function() {
-      expect(myWindow.document.title).toEqual(this.scope.pageTitle + ' | ' + this.scope.pageSubtitle);
+      expect(myWindow.document.title).toEqual(title + ' | ' + subtitle);
     });
   });
 
