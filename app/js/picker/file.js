@@ -1,12 +1,12 @@
 (function() {
-  angular.module('google.api').directive('file', file);
-  angular.module('google.api').controller('FileController', ['$scope', 'selectAction', FileController]);
+  angular.module('picker').directive('file', file);
+  angular.module('picker').controller('FileController', ['$scope', FileController]);
 
   function file() {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: 'templates/googleApi/file.html',
+      templateUrl: 'templates/picker/file.html',
       controller: 'FileController',
     };
   }
@@ -14,8 +14,6 @@
   function FileController($scope, selectAction) {
     $scope.onClick = function(e) {
       e.stopPropagation();
-
-      selectAction.openSheet($scope, $scope.file);
     };
   }
 })();

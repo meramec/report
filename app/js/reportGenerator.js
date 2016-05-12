@@ -1,3 +1,3 @@
 (function() {
-  angular.module('report.generator', ['google.api']);
+  angular.module('report.generator', ['picker']);
 })();

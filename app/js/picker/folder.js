@@ -1,12 +1,12 @@
 (function() {
-  angular.module('google.api').directive('folder', folder);
-  angular.module('google.api').controller('FolderController', ['$scope', FolderController]);
+  angular.module('picker').directive('folder', folder);
+  angular.module('picker').controller('FolderController', ['$scope', FolderController]);
 
   function folder() {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: 'templates/googleApi/folder.html',
+      templateUrl: 'templates/picker/folder.html',
       controller: 'FolderController',
     };
   }

@@ -1,18 +1,18 @@
 (function() {
-  angular.module('google.api').directive('picker', picker);
-  angular.module('google.api').controller('PickerController', ['$scope', '$timeout', PickerController]);
+  angular.module('picker').directive('pickerModal', pickerModal);
+  angular.module('picker').controller('PickerModalController', ['$scope', '$timeout', PickerModalController]);
 
-  function picker() {
+  function pickerModal() {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: 'templates/googleApi/picker.html',
-      controller: 'PickerController',
+      templateUrl: 'templates/picker/pickerModal.html',
+      controller: 'PickerModalController',
       scope: true
     };
   }
 
-  function PickerController($scope, $timeout) {
+  function PickerModalController($scope, $timeout) {
     $scope.showDrive = true;
 
     $scope.$on('choose-file', function() {

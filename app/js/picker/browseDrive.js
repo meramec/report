@@ -1,12 +1,12 @@
 (function() {
-  angular.module('google.api').directive('browseDrive', browseDrive);
-  angular.module('google.api').controller('BrowseDriveController', ['$scope', 'drive', 'me', BrowseDriveController]);
+  angular.module('picker').directive('browseDrive', browseDrive);
+  angular.module('picker').controller('BrowseDriveController', ['$scope', 'drive', BrowseDriveController]);
 
   function browseDrive() {
     return {
       restrict: 'E',
       replace: true,
-      templateUrl: 'templates/googleApi/browseDrive.html',
+      templateUrl: 'templates/picker/browseDrive.html',
       controller: 'BrowseDriveController',
       scope: {}
     };
