@@ -1,5 +1,5 @@
 (function() {
-  angular.module('google.api').service('auth', ['$http', auth]);
+  angular.module('google.api').service('auth', ['client', auth]);
 
   var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
   var scopes = [
@@ -8,46 +8,9 @@
     'https://spreadsheets.google.com/feeds'
   ];
 
-  var onAuthorize;
-  var loaded;
-  window.onGoogleLoaded = function() {
-    loaded = true;
-    if(onAuthorize)
-      onAuthorize();
-  };
-
-  function auth($http) {
-
+  function auth(client) {
     this.authorize = function(callback) {
-      var options = {
-        client_id: clientId,
-        scope: scopes.join(' '),
-        immediate: true
-      };
-  
-      var get = function() {
-        getAuthorization(options, callback);
-      };
-
-      if(loaded)
-        get();
-      else
-        onAuthorize = get;
+      client.authorization(clientId, scopes).authorize(callback);
     };
-
-    this.getToken = function() {
-      return gapi.auth.getToken().access_token;
-    };
-
-    function getAuthorization(options, callback) {
-      gapi.auth.authorize(options, function(result) {
-        if(result && ! result.error) {
-          callback();
-        } else if(options.immediate) {
-          options.immediate = false;
-          getAuthorization(options, callback);
-        }
-      });
-    }
   }
 })();

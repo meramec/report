@@ -41,9 +41,23 @@
     function getRootFolder() {
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
-        drive.folders[0] = update(response.result.id, response.result);
+        drive.folders.unshift(update(response.result.id, response.result));
         notify.onNotifyChange();
       });
+    }
+
+    function getSharedFolder() {
+      if(files['shared']) {
+        return files['shared'];
+      } else  {
+        var shared = acquire('shared');
+        update('shared', { name: 'Shared With Me' });
+        drive.folders.push(shared);
+
+        setNotEmpty(shared);
+
+        return shared;
+      }
     }
 
     function getFiles(opts) {
@@ -58,28 +72,12 @@
           _.each(response.files, function(file) {
             if(file.ownedByMe) {
               if(file.mimeType === 'application/vnd.google-apps.folder') {
-                file = update(file.id, file);
+                addFolderToParents(file);
+              } else {
+                addFileToParents(file);
               }
-
-              _.each(file.parents, function(id) {
-                var p = acquire(id);
-                if(file.mimeType === 'application/vnd.google-apps.folder') {
-                  p.folders.push(file);
-
-                  if(! file.empty)
-                    setNotEmpty(p);   
-                } else {
-                  p.files.push(file);
-                  setNotEmpty(p);
-                }
-              });
             } else {
-              var shared = acquire('shared');
-              update('shared', { name: 'Shared With Me' });
-              drive.folders[1] = shared;
-
-              shared.files.push(file);
-              setNotEmpty(shared);
+              getSharedFolder().files.push(file);
             }
           });
         }
@@ -88,7 +86,24 @@
         if(! response.nextPageToken)
           notify.onNotifyComplete();
       });
+    }
 
+    function addFolderToParents(folder) {
+      folder = update(folder.id, folder);
+      _.each(folder.parents, function(id) {
+        var p = acquire(id);
+        p.folders.push(folder);
+        if(! folder.empty)
+          setNotEmpty(p);
+      });
+    }
+
+    function addFileToParents(file) {
+      _.each(file.parents, function(id) {
+        var p = acquire(id);
+        p.files.push(file);
+        setNotEmpty(p);
+      });
     }
 
     function update(id, file) {
