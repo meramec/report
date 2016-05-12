@@ -3,19 +3,20 @@
 
   function latch() {
     return {
-      create: function() {
-        return new Latch();
+      create: function(n) {
+        return new Latch(n);
       }
     };
   }
 
-  function Latch() {
-    var ready;
+  function Latch(n) {
+    var ready = n ? n : 1;
 
     var calls = [];
 
     this.ready = function() {
-      ready = true;
+      if(--ready > 0)
+        return;
 
       while(calls.length > 0) {
         var call = calls.shift();
@@ -24,7 +25,7 @@
     };
 
     this.wait = function(fn) {
-      if(ready) {
+      if(ready == 0) {
         fn();
       } else {
         calls.push(fn);

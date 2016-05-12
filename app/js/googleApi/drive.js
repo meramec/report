@@ -17,7 +17,10 @@
   function BuildTree(drive, types, latch, notify) {
     var self = this;
 
-    var onRootLoaded = latch.create();
+    var onComplete = latch.create(2);
+    onComplete.wait(function() {
+      notify.onNotifyComplete();
+    });
 
     var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
     var opts = {
@@ -44,7 +47,7 @@
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
         drive.folders.unshift(update(response.result.id, response.result));
-        onRootLoaded.ready();
+        onComplete.ready();
       });
     }
 
@@ -87,9 +90,7 @@
         notify.onNotifyChange();
 
         if(! response.nextPageToken) {
-          onRootLoaded.wait(function() { 
-            notify.onNotifyComplete();
-          });
+          onComplete.ready();
         } 
       });
     }
