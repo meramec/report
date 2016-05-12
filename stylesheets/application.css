@@ -5,6 +5,25 @@
 .file {
   padding: 6px 0px 2px 10px; }
 
+.modal {
+  top: 120px;
+  width: 720px; }
+  .modal .pane {
+    height: 500px; }
+  .modal .menu {
+    float: left;
+    font-size: 1em; }
+    .modal .menu .menu {
+      width: 180px; }
+  .modal .body {
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: scroll; }
+    .modal .body .content {
+      padding: 20px;
+      height: auto; }
+
+/* /home/ryan/github/meramec/report/app/stylesheets/modal.sass */
 @keyframes fadeIn {
   from {
     opacity: 0; }
@@ -28,10 +47,8 @@
     box-shadow: 4px 6px 12px #444444;
     box-sizing: border-box;
     position: absolute;
-    top: 120px;
     left: 50%;
-    transform: translate(-50%, 0);
-    width: 720px; }
+    transform: translate(-50%, 0); }
     .overlay .modal .title-bar {
       padding: 8px;
       width: 100%;
@@ -46,32 +63,8 @@
         padding: 2px; }
         .overlay .modal .title-bar a.dismiss:before {
           content: "\00d7"; }
-    .overlay .modal .pane {
-      height: 500px; }
-    .overlay .modal .menu {
-      float: left;
-      font-size: 1em; }
-      .overlay .modal .menu .menu {
-        width: 180px; }
-    .overlay .modal .body {
-      height: 100%;
-      box-sizing: border-box;
-      overflow-y: scroll; }
-      .overlay .modal .body .content {
-        padding: 20px;
-        height: auto; }
 
-/* /home/ryan/github/meramec/report/app/stylesheets/layout.sass */
-* {
-  margin: 0px;
-  padding: 0px; }
-
-body {
-  font-family: sans-serif; }
-
-.page {
-  margin: 26px; }
-
+/* /home/ryan/github/meramec/report/app/stylesheets/header.sass */
 .header-banner {
   width: 100%;
   margin-bottom: 12px; }
@@ -88,6 +81,32 @@ body {
     font-size: 1.1em;
     font-weight: bold;
     margin-bottom: 2px; }
+  .header-banner .user {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 28px; }
+    .header-banner .user .icon {
+      width: 50px; }
+      .header-banner .user .icon img {
+        border-radius: 50%; }
+      .header-banner .user .icon .fa-user {
+        opacity: 0.5;
+        font-size: 46px;
+        text-align: center;
+        line-height: 50px;
+        width: 45px; }
+
+/* /home/ryan/github/meramec/report/app/stylesheets/layout.sass */
+* {
+  margin: 0px;
+  padding: 0px; }
+
+body {
+  font-family: sans-serif; }
+
+.page {
+  margin: 26px; }
 
 .link {
   cursor: pointer;
@@ -102,7 +121,7 @@ body {
 
 .menu {
   background-color: #eeeeee;
-  box-shadow: 2px 0px 2px #cccccc; }
+  box-shadow: 2px 0px 0px #cccccc; }
 
 ul.inline, ul.inline li {
   list-style-type: none;

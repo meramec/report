@@ -1,0 +1,10 @@
+<div class='user'>
+  <div class='icon'>
+    <div class='logged-in' ng-if='user.id'>
+      <img ng-src='{{ user.image.url }}'>
+    </div>
+    <div class='not-logged-in' ng-if='! user.id'>
+      <i class='fa fa-user'></i>
+    </div>
+  </div>
+</div>
