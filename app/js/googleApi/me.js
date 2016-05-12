@@ -4,13 +4,13 @@
   function me(client) {
     var lib = client.load('plus', 'v1');
 
-    this.load = function(me) {
+    this.load = function(callback) {
       lib.start(function() {
-        var fields = 'displayName, emails, id, image(url)';
+        var fields = 'displayName,id,image(url)';
         var request = gapi.client.plus.people.get({userId: 'me', fields: fields});
 
         request.execute(function(response) {
-          console.log(JSON.stringify(response));
+          callback(response.result); 
         });
       });
     };

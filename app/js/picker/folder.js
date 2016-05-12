@@ -12,8 +12,6 @@
   }
 
   function FolderController($scope) {
-    $scope.folder.open = false;
-
     $scope.onClick = function(e) {
       e.stopPropagation();
 

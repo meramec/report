@@ -1,21 +1,23 @@
 (function() {
-  angular.module('google.api').service('drive', ['client', drive]);
+  angular.module('google.api').service('drive', ['client', 'latch',  drive]);
 
-  function drive(client) {
+  function drive(client, latch) {
     var lib = client.load('drive', 'v3');
 
     this.buildTree = function(drive, types) {
       var notify = new Notify();
       lib.start(function() {
-        new BuildTree(drive, types, notify).begin();
+        new BuildTree(drive, types, latch, notify).begin();
       });
 
       return notify;
     }; 
   }
 
-  function BuildTree(drive, types, notify) {
+  function BuildTree(drive, types, latch, notify) {
     var self = this;
+
+    var onRootLoaded = latch.create();
 
     var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
     var opts = {
@@ -42,7 +44,7 @@
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
         drive.folders.unshift(update(response.result.id, response.result));
-        notify.onNotifyChange();
+        onRootLoaded.ready();
       });
     }
 
@@ -81,10 +83,14 @@
             }
           });
         }
+
         notify.onNotifyChange();
 
-        if(! response.nextPageToken)
-          notify.onNotifyComplete();
+        if(! response.nextPageToken) {
+          onRootLoaded.wait(function() { 
+            notify.onNotifyComplete();
+          });
+        } 
       });
     }
 

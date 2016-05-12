@@ -20,6 +20,7 @@
     auth.authorize(onReady);
 
     function onReady() {
+      $scope.$broadcast('authenticated');
       $scope.$broadcast('choose-file');
     }
   }

@@ -1,0 +1,7 @@
+.user
+  .icon
+    .logged-in{ 'ng-if' => 'user.id' }
+      %img{ 'ng-src' => '{{ user.image.url }}' }
+
+    .not-logged-in{ 'ng-if' => '! user.id' }
+      %i.fa.fa-user

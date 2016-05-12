@@ -1,0 +1,42 @@
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+.overlay
+  background: rgba(0, 0, 0, 0.4)
+  position: absolute
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  width: 100%
+  height: 100%
+
+  .modal
+    animation: fadeIn 1s
+    background: white
+    padding: 0px
+    box-shadow: 4px 6px 12px #444
+    box-sizing: border-box
+    position: absolute
+    left: 50%
+    transform: translate(-50%, 0)
+
+    .title-bar
+      padding: 8px
+      width: 100%
+      background-color: #444
+      color: #fff
+      font-size: 0.9em
+      box-sizing: border-box
+
+      a.dismiss
+        cursor: pointer
+        font-weight: bold
+        float: right
+        padding: 2px
+        &:before
+          content: '\00d7'
+
