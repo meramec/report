@@ -21,6 +21,9 @@
         $scope.$digest();
       });
     });
+    $scope.$on('select-file', function() {
+      $scope.dismiss();
+    });
     $scope.dismiss = function() {
       $scope.openModal = false;
       $timeout(function() {
