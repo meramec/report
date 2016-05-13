@@ -1,0 +1,10 @@
+<div class='row-report'>
+  <div class='worksheet' ng-repeat='sheet in rowReport'>
+    <div class='header'>{{ sheet.name }}</div>
+    <div class='row' ng-repeat='column in sheet.columns'>
+      <div class='header column'><i class='fa fa-angle-right'></i>
+      <span>{{ column.name }}</span></div>
+      <div class='value column'>{{ column.value }}</div>
+    </div>
+  </div>
+</div>

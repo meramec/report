@@ -20,17 +20,79 @@
 
 // /home/ryan/github/meramec/report/app/js/googleApi/sheets.js
 (function() {
-  angular.module('google.api').service('sheets', ['auth', '$http', sheets]);
+  angular.module('google.api').service('sheets', ['client', 'latch', '$http', sheets]);
 
-  function sheets(auth, $http) {
+  function sheets(client, latch, $http) {
     var self = this;
 
     self.open = function(id, callback) {
-      $http.jsonp(sheetUrl(id)).then(callback);
+      client.authToken().getToken(function(token) {
+        var spreadsheet = new Spreadsheet(token, callback);
+        spreadsheet.load(id);
+      });
     };
+    function Spreadsheet(token, callback) {
+      var title;
+      var worksheets = [];
 
-    function sheetUrl(id) {
-      return 'https://spreadsheets.google.com/feeds/list/' + id + '/od6/private/full?alt=json-in-script&access_token=' + auth.getToken() + '&callback=JSON_CALLBACK';
+      var params = '?alt=json-in-script&access_token=' + token + '&callback=JSON_CALLBACK';
+
+      this.load = function(id) {
+        var url = 'https://spreadsheets.google.com/feeds/worksheets/' + id + '/private/basic' + params;
+  
+        $http.jsonp(url).then(onWorksheetList);
+      };
+
+      function onWorksheetList(response) {
+        var doc = response.data.feed;
+        var onComplete = latch.create(doc.entry.length);
+
+        onComplete.wait(function() {
+          callback({ title: title, worksheets: worksheets });
+        });
+
+        title = doc.title.$t;
+
+        _.each(doc.entry, function(sheet) {
+          var s = {};
+          worksheets.push(s);
+
+          var link = _.find(sheet.link, function(l) { return l.rel === 'http://schemas.google.com/spreadsheets/2006#cellsfeed'; });
+          $http.jsonp(link.href + params).then(function(response) {
+            onWorksheet(response, s);
+            onComplete.ready();
+          });
+        });
+      }
+
+      function onWorksheet(response, sheet) {
+        var data = response.data.feed;
+        sheet.name = data.title.$t;
+
+        sheet.headers = [];
+        sheet.data = [];
+
+        _.each(data.entry, function(entry) {
+          var index = entry.title.$t;
+          var row = parseInt(index.replace(/^\D+/, ''));
+
+          var colLetters = index.replace(/\d+$/, '');
+          var col = 0;
+          for(var i = 0; i < colLetters.length; ++i) {
+            col *= 26;
+            col += colLetters.charCodeAt(i) - 64;
+          }
+
+          if(row == 1) {
+            sheet.headers[col-1] = entry.content.$t;
+          } else {
+            var i = row - 2;
+            if(! sheet.data[i])
+              sheet.data[i] = [];
+            sheet.data[i][col-1] = entry.content.$t;
+          }
+        });
+      }
     }
   }
 })();
@@ -73,7 +135,10 @@
   function BuildTree(drive, types, latch, notify) {
     var self = this;
 
-    var onRootLoaded = latch.create();
+    var onComplete = latch.create(2);
+    onComplete.wait(function() {
+      notify.onNotifyComplete();
+    });
 
     var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
     var opts = {
@@ -100,7 +165,7 @@
       var request = gapi.client.drive.files.get({fileId: 'root', fields: fields});
       request.execute(function(response) {
         drive.folders.unshift(update(response.result.id, response.result));
-        onRootLoaded.ready();
+        onComplete.ready();
       });
     }
 
@@ -143,9 +208,7 @@
         notify.onNotifyChange();
 
         if(! response.nextPageToken) {
-          onRootLoaded.wait(function() { 
-            notify.onNotifyComplete();
-          });
+          onComplete.ready();
         } 
       });
     }
@@ -247,19 +310,20 @@
 
   function latch() {
     return {
-      create: function() {
-        return new Latch();
+      create: function(n) {
+        return new Latch(n);
       }
     };
   }
 
-  function Latch() {
-    var ready;
+  function Latch(n) {
+    var ready = n ? n : 1;
 
     var calls = [];
 
     this.ready = function() {
-      ready = true;
+      if(--ready > 0)
+        return;
 
       while(calls.length > 0) {
         var call = calls.shift();
@@ -268,7 +332,7 @@
     };
 
     this.wait = function(fn) {
-      if(ready) {
+      if(ready == 0) {
         fn();
       } else {
         calls.push(fn);
@@ -281,35 +345,30 @@
 (function() {
   angular.module('google.api').service('client', ['$window', '$document', 'latch', client]);
 
-  var clientLoaded;
-
   function client($window, $document, latch) {
 
-    clientLoaded = latch.create();
+    var clientLoaded = latch.create();
+    authorized = latch.create();
 
     $window.onClientLoaded = function() {
       clientLoaded.ready();
     };
 
-    loadClient();
+    var clientjs = $document[0].createElement('script');
+    clientjs.src = 'https://apis.google.com/js/client.js?onload=onClientLoaded';
+    $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
       return new Authorization(clientId, scopes);
     };
 
     this.authToken = function() {
-      return gapi.auth.getToken().access_token
+      return new AuthToken();
     };
 
     this.load = function(lib, version) {
       return new Library(lib, version);
     };
-
-    function loadClient() {
-      var clientjs = $document[0].createElement('script');
-      clientjs.src = 'https://apis.google.com/js/client.js?onload=onClientLoaded';
-      $document[0].body.appendChild(clientjs);
-    }
 
     function Authorization(clientId, scopes) {
       var options = {
@@ -323,6 +382,7 @@
           gapi.auth.authorize(options, function(result) {
             if(result && ! result.error) {
               callback();
+              authorized.ready();
             } else if(options.immediate) {
               options.immediate = false;
               this.authorize(options, callback);
@@ -332,10 +392,18 @@
       };
     }
 
+    function AuthToken() {
+      this.getToken = function(callback) {
+        authorized.wait(function() {
+          callback(gapi.auth.getToken().access_token);
+        });
+      }
+    }
+
     function Library(lib, version) {
       var libraryLoaded = latch.create();
 
-      clientLoaded.wait(function() {
+      authorized.wait(function() {
         gapi.client.load(lib, version, function() {
           libraryLoaded.ready();
         });
@@ -347,6 +415,55 @@
     }
   };
 
+
+})();
+
+// /home/ryan/github/meramec/report/app/js/reportGenerator/rowReport.js
+(function() {
+  angular.module('report.generator').directive('rowReport', rowReport);
+  angular.module('report.generator').controller('RowReportController', ['$scope', RowReportController]);
+
+  function rowReport() {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'templates/reportGenerator/rowReport.html',
+      controller: 'RowReportController',
+      scope: true
+    };
+  }
+
+  function RowReportController($scope) {
+    $scope.$watch('row', function() {
+      if(! $scope.row)
+        return;
+
+      $scope.rowReport = [];
+
+      _.each($scope.spreadsheet.worksheets, function(worksheet) {
+        var row = _.find(worksheet.data, function(row) {
+          return row[0] === $scope.row;
+        });
+
+        if(row) {
+          var report = {
+            name: worksheet.name,
+            columns: []
+          };
+
+          $scope.rowReport.push(report);
+
+          _.each(_.tail(row, 1), function(column, j) {
+            report.columns.push({
+              name: worksheet.headers[j+1],
+              value: column
+            });
+          });
+        }
+      });
+
+    });
+  }
 
 })();
 
@@ -374,15 +491,33 @@
   }
 })();
 
-// /home/ryan/github/meramec/report/app/js/reportGenerator/currentAction.js
+// /home/ryan/github/meramec/report/app/js/reportGenerator/spreadsheet.js
 (function() {
-  angular.module('report.generator').directive('currentAction', currentAction);
+  angular.module('report.generator').directive('spreadsheet', spreadsheet);
+  angular.module('report.generator').controller('SpreadsheetController', ['$scope', '$window', 'sheets', SpreadsheetController]);
 
-  function currentAction() {
+  function spreadsheet() {
     return {
-      restrict: 'E',
+      retrict: 'E',
       replace: true,
-      templateUrl: 'templates/reportGenerator/currentAction.html'
+      templateUrl: 'templates/reportGenerator/spreadsheet.html',
+      controller: 'SpreadsheetController',
+      scope: true
+    };
+  }
+
+  function SpreadsheetController($scope, $window, sheets) {
+    $scope.$watch('id', function() {
+      if(! $scope.id)
+        return;
+
+      sheets.open($scope.id, function(spreadsheet) {
+        $scope.spreadsheet = spreadsheet;
+      });
+    });
+
+    $scope.onClick = function(row) {
+      $scope.row = row;
     };
   }
 })();
@@ -413,6 +548,10 @@
       $scope.$broadcast('authenticated');
       $scope.$broadcast('choose-file');
     }
+
+    $scope.$on('select-file', function(e, id) {
+      $scope.id = id;
+    });
   }
 })();
 
@@ -440,24 +579,64 @@
   }
 })();
 
-// /home/ryan/github/meramec/report/app/js/reportGenerator/selectAction.js
+// /home/ryan/github/meramec/report/app/js/reportGenerator/summary.js
 (function() {
-  angular.module('report.generator').service('selectAction', ['sheets', selectAction]);
+  angular.module('report.generator').directive('summary', summary);
+  angular.module('report.generator').controller('SummaryController', ['$scope', '$timeout', SummaryController]);
 
-  function selectAction(sheets) {
-    this.browseDrive = function(scope) {
-      scope.pageTitle = 'Choose Spreadsheet';
-      scope.pageSubtitle = 'Spreadsheets available to your google credentials';
-      scope.currentAction = 'browse-drive';
+  function summary() {
+    return {
+      retrict: 'E',
+      replace: true,
+      templateUrl: 'templates/reportGenerator/summary.html',
+      controller: 'SummaryController'
+    };
+  }
+
+  function SummaryController($scope, $timeout) {
+    $scope.$watch('spreadsheet', function() {
+      if(! $scope.spreadsheet)
+        return;
+
+      $scope.primaryHeader = primaryHeader();
+      $scope.summaries = summarizeWorksheets();
+    });
+
+    function primaryHeader() {
+      var sheet = primaryWorksheet();
+      if(sheet)
+        return sheet.headers[0];
     };
 
-    this.openSheet = function(scope, file) {
-      console.log(file.id);
-      console.log(file.name);
-      sheets.open(file.id, function(data) {
-        console.log(JSON.stringify(data));
-      });
-    };
+    function summarizeWorksheets() {
+      var summaries = [];
+      var byName = {};
+
+      if($scope.spreadsheet) {
+        _.each($scope.spreadsheet.worksheets, function(worksheet, k) {
+          _.each(worksheet.data, function(row) {
+            var name = row[0];
+            var summary = byName[name];
+            if(! summary) {
+              summary = byName[name] = {
+                name: name,
+                totals: []
+              };
+              summaries.push(summary);
+            }
+
+            summary.totals[k] = _.filter(_.tail(row, 1), function(value) { return !!value}).length;
+          });
+        });
+      }
+
+      return summaries;
+    }
+
+    function primaryWorksheet() {
+      if($scope.spreadsheet && $scope.spreadsheet.worksheets)
+        return $scope.spreadsheet.worksheets[0]; 
+    }
   }
 })();
 
@@ -494,13 +673,15 @@
       restrict: 'E',
       replace: true,
       templateUrl: 'templates/picker/file.html',
-      controller: 'FileController',
+      controller: 'FileController'
     };
   }
 
-  function FileController($scope, selectAction) {
+  function FileController($scope) {
     $scope.onClick = function(e) {
       e.stopPropagation();
+
+      $scope.$emit('select-file', $scope.file.id);
     };
   }
 })();
@@ -558,15 +739,12 @@
 
     $scope.$on('choose-file', function() {
       $scope.openModal = true;
-      $timeout(function() {
-        $scope.$digest();
-      });
+    });
+    $scope.$on('select-file', function() {
+      $scope.dismiss();
     });
     $scope.dismiss = function() {
       $scope.openModal = false;
-      $timeout(function() {
-        $scope.$digest();
-      });
     };
   }
 

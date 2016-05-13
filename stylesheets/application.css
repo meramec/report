@@ -97,13 +97,73 @@
         line-height: 50px;
         width: 45px; }
 
+/* /home/ryan/github/meramec/report/app/stylesheets/report.sass */
+.table .row {
+  width: 100%;
+  white-space: nowrap; }
+.table .column {
+  display: inline-block; }
+.table .row {
+  overflow: hidden;
+  white-space: nowrap; }
+.table .column {
+  width: 120px;
+  padding: 4px 10px 1px 6px; }
+  .table .column + .column {
+    text-align: right;
+    width: 160px; }
+.table .header {
+  font-size: 1em;
+  font-weight: bold;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid black; }
+.table .data .row {
+  cursor: pointer;
+  width: 100%; }
+  .table .data .row:nth-of-type(odd) {
+    background-color: #efefef; }
+  .table .data .row:hover {
+    background-color: lightgrey; }
+
+.row-report {
+  padding-bottom: 10px; }
+  .row-report .worksheet {
+    display: inline-block;
+    vertical-align: top;
+    width: 40%;
+    padding: 20px 48px 10px 10px; }
+    .row-report .worksheet .row {
+      width: 100%;
+      white-space: nowrap; }
+    .row-report .worksheet .column {
+      display: inline-block; }
+    .row-report .worksheet > .header {
+      font-size: 1em;
+      font-weight: bold;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid black; }
+    .row-report .worksheet .row {
+      margin: 6px 0px 0px 2px;
+      overflow: auto; }
+      .row-report .worksheet .row .header {
+        width: 68%;
+        margin-right: 8px; }
+      .row-report .worksheet .row .value {
+        width: 24%;
+        text-align: right; }
+    .row-report .worksheet .column {
+      vertical-align: top; }
+
 /* /home/ryan/github/meramec/report/app/stylesheets/layout.sass */
+@import url("//fonts.googleapis.com/css?family=Open+Sans");
 * {
   margin: 0px;
   padding: 0px; }
 
 body {
-  font-family: sans-serif; }
+  font-family: "Open Sans"; }
 
 .page {
   margin: 26px; }
