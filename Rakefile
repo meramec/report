@@ -1,5 +1,6 @@
 task :install do
   sh 'npm install angular'
+  sh 'npm install angular-route'
   sh 'npm install angular-mocks'
   sh 'npm install underscore'
 end
