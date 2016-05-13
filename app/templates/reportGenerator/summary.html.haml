@@ -1,0 +1,15 @@
+.summary
+  .table
+    .header
+      .row
+        .value.column<
+          {{ primaryHeader }}
+        .value.column{ 'ng-repeat' => 'worksheet in spreadsheet.worksheets' }<
+          {{ worksheet.name }}
+
+    .data
+      .row{ 'ng-repeat' => 'summary in summaries', 'ng-click' => 'onClick(summary.name)' }
+        .value.column<
+          {{ summary.name }}
+        .value.column{ 'ng-repeat' => 'total in summary.totals' }<
+          {{ total }}

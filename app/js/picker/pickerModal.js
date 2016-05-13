@@ -17,18 +17,12 @@
 
     $scope.$on('choose-file', function() {
       $scope.openModal = true;
-      $timeout(function() {
-        $scope.$digest();
-      });
     });
     $scope.$on('select-file', function() {
       $scope.dismiss();
     });
     $scope.dismiss = function() {
       $scope.openModal = false;
-      $timeout(function() {
-        $scope.$digest();
-      });
     };
   }
 

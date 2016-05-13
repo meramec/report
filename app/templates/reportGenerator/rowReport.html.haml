@@ -1,0 +1,12 @@
+.row-report
+  .worksheet{ 'ng-repeat' => 'sheet in rowReport' }
+    .header<
+      {{ sheet.name }}
+
+    .row{ 'ng-repeat' => 'column in sheet.columns' }
+      .header.column<
+        %i.fa.fa-angle-right
+        %span {{ column.name }}
+      .value.column<
+        {{ column.value }}
+    

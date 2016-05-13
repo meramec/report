@@ -25,7 +25,7 @@
     }
 
     $scope.$on('select-file', function(e, id) {
-      $scope.$broadcast('load-spreadsheet', id);
+      $scope.id = id;
     });
   }
 })();
