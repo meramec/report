@@ -1,0 +1,33 @@
+.table
+  .row
+    width: 100%
+    overflow: hidden
+    white-space: nowrap
+
+  .column
+    display: inline-block
+    white-space: pre-wrap
+    width: 120px
+    padding: 4px 10px 1px 6px
+
+    & + .column
+      text-align: right
+      width: 160px
+
+  .header
+    font-size: 1em
+    font-weight: bold
+    padding-bottom: 6px
+    margin-bottom: 12px
+    border-bottom: 1px solid black
+
+  .data
+    .row
+      cursor: pointer
+      width: 100%
+
+      &:nth-of-type(odd)
+        background-color: #efefef
+
+      &:hover
+        background-color: lightgray

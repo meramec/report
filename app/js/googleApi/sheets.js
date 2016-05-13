@@ -46,9 +46,11 @@
 
       function onWorksheet(response, sheet) {
         var data = response.data.feed;
-        sheet.title = data.title.$t;
+        sheet.name = data.title.$t;
 
+        sheet.headers = [];
         sheet.data = [];
+
         _.each(data.entry, function(entry) {
           var index = entry.title.$t;
           var row = parseInt(index.replace(/^\D+/, ''));
@@ -60,12 +62,15 @@
             col += colLetters.charCodeAt(i) - 64;
           }
 
-          var i = row - 1, j = col - 1;
-          if(! sheet.data[i])
-            sheet.data[i] = [];
-          sheet.data[i][j] = entry.content.$t;
+          if(row == 1) {
+            sheet.headers[col-1] = entry.content.$t;
+          } else {
+            var i = row - 2;
+            if(! sheet.data[i])
+              sheet.data[i] = [];
+            sheet.data[i][col-1] = entry.content.$t;
+          }
         });
-
       }
     }
   }

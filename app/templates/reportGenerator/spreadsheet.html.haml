@@ -1,1 +1,16 @@
 .spreadsheet
+  .table
+    .header
+      .row
+        .value.column{ 'ng-if' => 'spreadsheet' }<
+          {{ primaryHeader }}
+        .value.column{ 'ng-repeat' => 'worksheet in spreadsheet.worksheets' }<
+          {{ worksheet.name }}
+
+    .data
+      .row{ 'ng-repeat' => 'summary in summaries' }
+        .value.column<
+          {{ summary.name }}
+        .value.column{ 'ng-repeat' => 'total in summary.totals' }<
+          {{ total }}
+        
