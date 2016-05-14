@@ -563,6 +563,14 @@
     //  $scope.$broadcast('choose-file');
     }
 
+    $scope.chooseFile = function() {
+      $scope.$broadcast('choose-file');
+    }
+
+    $scope.print = function() {
+
+    }
+
     $scope.$on('select-file', function(e, id) {
       $scope.id = id;
     });
@@ -611,6 +619,7 @@
 
     $scope.signOut = function() {
       client.signOut();
+      $scope.showInfo = false; 
     };
 
     $scope.email = function() {

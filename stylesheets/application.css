@@ -67,29 +67,39 @@
 /* /home/ryan/github/meramec/report/app/stylesheets/header.sass */
 .header-banner {
   width: 100%;
-  padding: 26px;
+  padding: 0px 0px 0px 0px;
   margin-bottom: 12px;
-  background-color: #8888aa;
-  color: white;
-  box-shadow: 0px 2px 2px #444466; }
+  background-color: #efefef;
+  box-shadow: 0px 2px 2px #dddddd; }
   .header-banner .title {
-    font-size: 2em;
+    padding: 6px 0px 4px 40px;
+    color: white;
+    background-color: #444466;
+    box-shadow: 0px 2px 2px #444466;
+    font-size: 2.4em;
     font-weight: bold;
-    margin-bottom: 6px; }
+    vertical-align: top; }
   .header-banner .subtitle {
-    font-size: 1.2em;
+    padding: 2px 30px 6px 40px;
+    color: #444444;
+    font-size: 1.4em;
     font-weight: bold;
-    margin-bottom: 12px; }
-  .header-banner .navigation {
-    font-style: italic;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 2px; }
+    margin-bottom: 12px;
+    vertical-align: top; }
+    .header-banner .subtitle .link {
+      font-size: 0.8em;
+      float: right;
+      padding: 8px;
+      margin-right: 4px;
+      border-radius: 50%;
+      border: solid thin #dddddd; }
+      .header-banner .subtitle .link:hover {
+        background-color: #dddddd; }
   .header-banner .user {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 28px; }
+    padding: 8px 32px 8px 0px; }
     .header-banner .user .icon {
       width: 50px; }
       .header-banner .user .icon img {
@@ -103,7 +113,7 @@
         width: 45px; }
     .header-banner .user .info {
       position: absolute;
-      top: 90;
+      top: 70;
       right: 30;
       padding: 22px;
       background-color: white;
