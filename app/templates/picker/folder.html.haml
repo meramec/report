@@ -4,5 +4,5 @@
     {{ folder.name }}
 
   .contents{ 'ng-show' => 'folder.open' }
-    %folder{ 'ng-repeat' => 'folder in folder.folders' }
-    %file{ 'ng-repeat' => 'file in folder.files' }
+    %folder{ 'ng-repeat' => 'folder in folder.folders | orderBy : "name"' }
+    %file{ 'ng-repeat' => 'file in folder.files | orderBy : "name"' }

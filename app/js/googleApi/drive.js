@@ -22,7 +22,7 @@
       notify.onNotifyComplete();
     });
 
-    var fields = 'id,mimeType,name,parents,size,ownedByMe,owners(displayName)';
+    var fields = 'id,mimeType,name,parents,ownedByMe,owners(displayName)';
     var opts = {
       fields: 'nextPageToken, files(' + fields + ')',
       q: "trashed=false"
