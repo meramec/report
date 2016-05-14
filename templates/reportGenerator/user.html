@@ -1,10 +1,23 @@
 <div class='user'>
   <div class='icon'>
     <div class='logged-in' ng-if='user.id'>
-      <img ng-src='{{ user.image.url }}'>
+      <img ng-click='toggleInfo($event)' ng-src='{{ user.image.url }}'>
     </div>
     <div class='not-logged-in' ng-if='! user.id'>
       <i class='fa fa-user'></i>
+    </div>
+  </div>
+  <div class='info' ng-click='$event.stopPropagation()' ng-show='showInfo'>
+    <div class='arrow'></div>
+    <div class='name'>
+      {{ user.displayName }}
+    </div>
+    <div class='email'>
+      {{ email() }}
+    </div>
+    <div class='separator'></div>
+    <div class='link' ng-click='signOut()'>
+      Sign Out
     </div>
   </div>
 </div>

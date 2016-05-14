@@ -105,6 +105,7 @@
   var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
   var scopes = [
     'https://www.googleapis.com/auth/plus.me',
+    'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/drive.metadata.readonly',
     'https://spreadsheets.google.com/feeds'
   ];
@@ -294,7 +295,7 @@
 
     this.load = function(callback) {
       lib.start(function() {
-        var fields = 'displayName,id,image(url)';
+        var fields = 'displayName,id,emails,image(url)';
         var request = gapi.client.plus.people.get({userId: 'me', fields: fields});
 
         request.execute(function(response) {
@@ -344,9 +345,9 @@
 
 // /home/ryan/github/meramec/report/app/js/googleApi/client.js
 (function() {
-  angular.module('google.api').service('client', ['$window', '$document', 'latch', client]);
+  angular.module('google.api').service('client', ['$window', '$document', '$http', 'latch', client]);
 
-  function client($window, $document, latch) {
+  function client($window, $document, $http, latch) {
 
     var clientLoaded = latch.create();
     authorized = latch.create();
@@ -371,7 +372,13 @@
       return new Library(lib, version);
     };
 
+    this.signOut = function() {
+      gapi.auth.setToken(null);
+      gapi.auth.signOut();
+    };
+
     function Authorization(clientId, scopes) {
+      var self = this;
       var options = {
         client_id: clientId,
         scope: scopes.join(' '),
@@ -386,7 +393,7 @@
               authorized.ready();
             } else if(options.immediate) {
               options.immediate = false;
-              this.authorize(options, callback);
+              self.authorize(options, callback);
             }
           });
         });
@@ -553,7 +560,7 @@
 
     function onReady() {
       $scope.$broadcast('authenticated');
-      $scope.$broadcast('choose-file');
+    //  $scope.$broadcast('choose-file');
     }
 
     $scope.$on('select-file', function(e, id) {
@@ -565,24 +572,60 @@
 // /home/ryan/github/meramec/report/app/js/reportGenerator/user.js
 (function() {
   angular.module('report.generator').directive('user', user);
-  angular.module('report.generator').controller('UserController', ['$scope', 'me', UserController]);
+  angular.module('report.generator').controller('UserController', ['$scope', '$document', 'me', 'client', UserController]);
 
   function user() {
     return {
       restrict: 'E',
       replace: true,
       templateUrl: 'templates/reportGenerator/user.html',
-      controller: 'UserController'
+      controller: 'UserController',
+      scope: {}
     };
   }
 
-  function UserController($scope, me) {
+  function UserController($scope, $document, me, client) {
     $scope.$on('authenticated', function() {
       me.load(function(user) {
         $scope.user = user;
         $scope.$digest();
       });
     });
+
+    $scope.toggleInfo = function(e) {
+      e.stopPropagation();
+      $scope.showInfo = ! $scope.showInfo;
+
+      function handleClick() {
+        $scope.showInfo = false;
+        $scope.$digest();
+      }
+
+      if($scope.showInfo) {
+        $document.bind('click', handleClick);
+      
+      } else {
+        $document.unbind('click', handleClick);
+      }
+    };
+
+    $scope.signOut = function() {
+      client.signOut();
+    };
+
+    $scope.email = function() {
+      if(! $scope.user || ! $scope.user.emails)
+        return;
+
+      var email = _.find($scope.user.emails, function(email) {
+        return email.type === 'account';
+      });
+
+      if(email)
+        return email.value;
+
+      return $scope.user.emails[0].value;
+    };
   }
 })();
 
