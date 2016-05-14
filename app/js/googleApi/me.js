@@ -6,7 +6,7 @@
 
     this.load = function(callback) {
       lib.start(function() {
-        var fields = 'displayName,id,image(url)';
+        var fields = 'displayName,id,emails,image(url)';
         var request = gapi.client.plus.people.get({userId: 'me', fields: fields});
 
         request.execute(function(response) {

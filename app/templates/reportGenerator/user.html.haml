@@ -1,7 +1,19 @@
 .user
   .icon
     .logged-in{ 'ng-if' => 'user.id' }
-      %img{ 'ng-src' => '{{ user.image.url }}' }
+      %img{ 'ng-src' => '{{ user.image.url }}', 'ng-click' => 'toggleInfo($event)' }
 
     .not-logged-in{ 'ng-if' => '! user.id' }
       %i.fa.fa-user
+
+  .info{ 'ng-show' => 'showInfo', 'ng-click' => '$event.stopPropagation()' }
+    .arrow
+    .name
+      {{ user.displayName }}
+    .email
+      {{ email() }}
+
+    .separator
+
+    .link{ 'ng-click' => 'signOut()' }
+      Sign Out

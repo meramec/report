@@ -21,7 +21,7 @@
 
     function onReady() {
       $scope.$broadcast('authenticated');
-      $scope.$broadcast('choose-file');
+    //  $scope.$broadcast('choose-file');
     }
 
     $scope.$on('select-file', function(e, id) {

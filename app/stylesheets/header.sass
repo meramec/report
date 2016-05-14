@@ -1,6 +1,10 @@
 .header-banner
   width: 100%
+  padding: 26px
   margin-bottom: 12px
+  background-color: #88a
+  color: white
+  box-shadow: 0px 2px 2px #446
 
   .title
     font-size: 2em
@@ -27,10 +31,56 @@
       width: 50px
       img
         border-radius: 50%
+        cursor: pointer
       .fa-user
         opacity: 0.5
         font-size: 46px
         text-align: center
         line-height: 50px
         width: 45px
-  
+ 
+    .info
+      position: absolute
+      top: 90
+      right: 30 
+      padding: 22px
+      background-color: white
+      color: #222
+      box-shadow: 2px 1px 4px #444
+      .name
+        font-size: 0.9em
+        font-weight: bold
+      .email
+        font-size: 0.8em
+        font-style: italic
+      .separator
+        margin: 12px 24px 12px 24px
+        border-top: solid thin #888
+      .link
+        padding: 6px
+        white-space: nowrap
+        border: solid thin darkgrey
+        text-align: center
+        background-color: #eee
+        &:hover
+          background-color: #ddd
+
+      .arrow
+        position: relative
+        background: #ffffff
+        top: -22px
+        left: calc(50% - 5px)
+
+        &:after
+          bottom: 100%
+          left: 50%
+          border: solid transparent
+          content: " "
+          height: 0
+          width: 0
+          position: absolute
+          border-color: rgba(255, 255, 255, 0)
+          border-bottom-color: #ffffff
+          border-width: 8px
+          margin-left: -8px
+

@@ -1,7 +1,7 @@
 (function() {
-  angular.module('google.api').service('client', ['$window', '$document', 'latch', client]);
+  angular.module('google.api').service('client', ['$window', '$document', '$http', 'latch', client]);
 
-  function client($window, $document, latch) {
+  function client($window, $document, $http, latch) {
 
     var clientLoaded = latch.create();
     authorized = latch.create();
@@ -26,7 +26,13 @@
       return new Library(lib, version);
     };
 
+    this.signOut = function() {
+      gapi.auth.setToken(null);
+      gapi.auth.signOut();
+    };
+
     function Authorization(clientId, scopes) {
+      var self = this;
       var options = {
         client_id: clientId,
         scope: scopes.join(' '),
@@ -41,7 +47,7 @@
               authorized.ready();
             } else if(options.immediate) {
               options.immediate = false;
-              this.authorize(options, callback);
+              self.authorize(options, callback);
             }
           });
         });
