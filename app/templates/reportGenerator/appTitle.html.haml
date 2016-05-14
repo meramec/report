@@ -7,6 +7,10 @@
         {{ report.subtitle }}
       %li{ 'ng-repeat' => 'nested in report.nestedSubtitle' }
         {{ nested }}
-  .navigation
+
+    .link{ 'ng-click' => 'chooseFile()' }
+      %i.fa.fa-folder
+    .link{ 'ng-click' => 'print()' }
+      %i.fa.fa-print
 
   %user
