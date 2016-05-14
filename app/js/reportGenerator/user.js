@@ -39,6 +39,7 @@
 
     $scope.signOut = function() {
       client.signOut();
+      $scope.showInfo = false; 
     };
 
     $scope.email = function() {
