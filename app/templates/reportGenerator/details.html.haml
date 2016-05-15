@@ -1,5 +1,5 @@
 .details
-  .link{ 'ng-click' => 'onClick()', 'ng-class' => '{ active: showDetails }' }
+  .link{ 'ng-click' => 'onClick($event)', 'ng-class' => '{ active: showDetails }' }
     {{ worksheet.name }}
   .worksheet{ 'ng-show' => 'showDetails' }
     .row{ 'ng-repeat' => 'column in worksheet.details' }<
