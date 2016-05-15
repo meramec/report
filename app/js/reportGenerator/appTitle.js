@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('appTitle', appTitle);
-  angular.module('report.generator').controller('AppTitleController', ['$scope', '$window', AppTitleController]);
+  angular.module('report.generator').controller('AppTitleController', ['$scope', '$window', 'path', AppTitleController]);
 
   function appTitle() {
     return {
@@ -11,12 +11,16 @@
     };
   }
 
-  function AppTitleController($scope, $window) {
+  function AppTitleController($scope, $window, path) {
 
-    function updateTitle() {
-      $window.document.title = $scope.report.title + ' | ' + $scope.report.subtitle;
+    function updateTitle(path) {
+      var components = [ $scope.report.title, $scope.report.subtitle, path ];
+
+      $window.document.title = _.compact(components).join(' | ');
+      $scope.path = path;
     }
 
-    updateTitle();
+    updateTitle(path.get());
+    path.watch($scope, updateTitle);
   }
 })();

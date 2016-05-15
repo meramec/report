@@ -1,15 +1,15 @@
 .app-title.header-banner
   .title
-    {{ report.title }}
+    %editable{ 'key' => 'title' }
 
     %user.screen-only
 
   .subtitle
     %ul.inline
       %li
-        {{ report.subtitle }}
-      %li{ 'ng-repeat' => 'nested in report.nestedSubtitle' }
-        {{ nested }}
+        %editable{ 'key' => 'subtitle' }
+      %li{ 'ng-if' => 'path' }
+        {{ path }}
 
     .link.screen-only{ 'ng-click' => 'print()' }
       %i.fa.fa-print

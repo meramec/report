@@ -12,6 +12,9 @@
   .column
     display: inline-block
 
+  ::selection
+    background: #99b
+
 .table
   +table
   .row
@@ -19,12 +22,16 @@
     white-space: nowrap
 
   .column
-    width: 120px
     padding: 4px 10px 1px 6px
+    width: 80px
+    @media screen
+      width: 120px
 
     & + .column
       text-align: right
-      width: 160px
+      width: 90px
+      @media screen
+        width: 160px
 
   .header
     +header

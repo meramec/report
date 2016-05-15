@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('spreadsheet', spreadsheet);
-  angular.module('report.generator').controller('SpreadsheetController', ['$scope', '$location', 'sheets', SpreadsheetController]);
+  angular.module('report.generator').controller('SpreadsheetController', ['$scope', 'path', 'sheets', SpreadsheetController]);
 
   function spreadsheet() {
     return {
@@ -12,12 +12,12 @@
     };
   }
 
-  function SpreadsheetController($scope, $location, sheets) {
+  function SpreadsheetController($scope, path, sheets) {
 
-    $scope.row = getRowFromPath();
+    $scope.row = path.get();
 
-    $scope.$on('$locationChangeSuccess', function() {
-      $scope.row = getRowFromPath();
+    path.watch($scope, function(row) {
+      $scope.row = row;
     });
 
     $scope.$watch('id', function() {
@@ -31,12 +31,9 @@
 
     $scope.onClick = function(row) {
       $scope.row = row;
-      $location.path(row);
+      path.set(row);
     };
 
-    function getRowFromPath() {
-      return $location.path().replace(/^\//, '');
-    }
   }
 
 })();

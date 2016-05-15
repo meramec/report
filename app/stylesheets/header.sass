@@ -6,12 +6,17 @@
   @media screen
     background-color: #efefef
     box-shadow: 0px 2px 2px #ddd
+    .editable
+      cursor: pointer
+      padding-right: 10px
 
   .title
     padding: 6px 0px 4px 0px
     font-size: 2.2em
     font-weight: bold
     vertical-align: top
+    ::selection
+      background: #779
     @media screen
       padding-left: 40px
       color: white
@@ -19,11 +24,13 @@
       box-shadow: 0px 2px 2px #446
 
   .subtitle
-    padding: 2px 30px 6px 0px
+    padding: 6px 30px 6px 0px
     font-size: 1.4em
     font-weight: bold
     margin-bottom: 12px
     vertical-align: top
+    ::selection
+      background: #ccc
     @media screen
       padding-left: 40px
       color: #444
