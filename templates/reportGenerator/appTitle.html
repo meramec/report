@@ -1,22 +1,25 @@
 <div class='app-title header-banner'>
   <div class='title'>
-    {{ report.title }}
+    <editable key='title'></editable>
+    <user class='screen-only'></user>
   </div>
   <div class='subtitle'>
     <ul class='inline'>
       <li>
-        {{ report.subtitle }}
+        <editable key='subtitle'></editable>
       </li>
-      <li ng-repeat='nested in report.nestedSubtitle'>
-        {{ nested }}
+      <li ng-if='path'>
+        {{ path }}
       </li>
     </ul>
-    <div class='link' ng-click='chooseFile()'>
-      <i class='fa fa-folder'></i>
-    </div>
-    <div class='link' ng-click='print()'>
+    <div class='link screen-only' ng-click='print()'>
       <i class='fa fa-print'></i>
     </div>
+    <div class='link screen-only' ng-click='chooseFile()'>
+      <i class='fa fa-folder'></i>
+    </div>
+    <div class='link screen-only' ng-click='goHome()'>
+      <i class='fa fa-home'></i>
+    </div>
   </div>
-  <user></user>
 </div>

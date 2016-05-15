@@ -9,12 +9,12 @@
         <div class='menu-bar vertical'>
           <ul class='menu'>
             <li>
-              <div class='link' ng-class='{ active : showDrive }'>
+              <div class='link' ng-class='{ active: showDrive }' ng-click='onBrowse()'>
                 Browse Drive
               </div>
             </li>
             <li>
-              <div class='link' ng-class='{ active: !showDrive }'>
+              <div class='link' ng-class='{ active: !showDrive, disabled: !hasRecent }' ng-click='onRecent()'>
                 Recent
               </div>
             </li>
@@ -22,7 +22,10 @@
         </div>
         <div class='body'>
           <div class='content'>
-            <browse-drive></browse-drive>
+            <browse-drive ng-show='showDrive'></browse-drive>
+            <div class='recent-files' ng-show='!showDrive'>
+              <file ng-repeat='file in recentFiles'></file>
+            </div>
           </div>
         </div>
       </div>

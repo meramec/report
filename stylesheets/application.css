@@ -23,6 +23,18 @@
       padding: 20px;
       height: auto; }
 
+/* /home/ryan/github/meramec/report/app/stylesheets/print.sass */
+@media print {
+  .page {
+    margin: 0px;
+    font-size: 8pt; }
+
+  .screen-only {
+    display: none; } }
+@page {
+  size: auto;
+  margin: 0.5in; }
+
 /* /home/ryan/github/meramec/report/app/stylesheets/modal.sass */
 @keyframes fadeIn {
   from {
@@ -68,24 +80,39 @@
 .header-banner {
   width: 100%;
   padding: 0px 0px 0px 0px;
-  margin-bottom: 12px;
-  background-color: #efefef;
-  box-shadow: 0px 2px 2px #dddddd; }
+  margin-bottom: 12px; }
+  @media screen {
+    .header-banner {
+      background-color: #efefef;
+      box-shadow: 0px 2px 2px #dddddd; }
+      .header-banner .editable {
+        cursor: pointer;
+        padding-right: 10px; } }
   .header-banner .title {
-    padding: 6px 0px 4px 40px;
-    color: white;
-    background-color: #444466;
-    box-shadow: 0px 2px 2px #444466;
-    font-size: 2.4em;
+    padding: 6px 0px 4px 0px;
+    font-size: 2.2em;
     font-weight: bold;
     vertical-align: top; }
+    .header-banner .title ::selection {
+      background: #777799; }
+    @media screen {
+      .header-banner .title {
+        padding-left: 40px;
+        color: white;
+        background-color: #444466;
+        box-shadow: 0px 2px 2px #444466; } }
   .header-banner .subtitle {
-    padding: 2px 30px 6px 40px;
-    color: #444444;
+    padding: 6px 30px 6px 0px;
     font-size: 1.4em;
     font-weight: bold;
     margin-bottom: 12px;
     vertical-align: top; }
+    .header-banner .subtitle ::selection {
+      background: #cccccc; }
+    @media screen {
+      .header-banner .subtitle {
+        padding-left: 40px;
+        color: #444444; } }
     .header-banner .subtitle .link {
       font-size: 0.8em;
       float: right;
@@ -96,15 +123,19 @@
       .header-banner .subtitle .link:hover {
         background-color: #dddddd; }
   .header-banner .user {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 8px 32px 8px 0px; }
+    float: right;
+    padding-right: 32px;
+    font-size: medium;
+    font-weight: normal; }
     .header-banner .user .icon {
-      width: 50px; }
+      width: 50px;
+      color: #dddddd; }
       .header-banner .user .icon img {
+        background: black;
         border-radius: 50%;
         cursor: pointer; }
+        .header-banner .user .icon img:hover {
+          opacity: 0.8; }
       .header-banner .user .icon .fa-user {
         opacity: 0.5;
         font-size: 46px;
@@ -160,15 +191,23 @@
   white-space: nowrap; }
 .table .column {
   display: inline-block; }
+.table ::selection {
+  background: #9999bb; }
 .table .row {
   overflow: hidden;
   white-space: nowrap; }
 .table .column {
-  width: 120px;
-  padding: 4px 10px 1px 6px; }
+  padding: 4px 10px 1px 6px;
+  width: 80px; }
+  @media screen {
+    .table .column {
+      width: 120px; } }
   .table .column + .column {
     text-align: right;
-    width: 160px; }
+    width: 90px; }
+    @media screen {
+      .table .column + .column {
+        width: 160px; } }
 .table .header {
   font-size: 1em;
   font-weight: bold;
@@ -183,35 +222,43 @@
   .table .data .row:hover {
     background-color: lightgrey; }
 
-.row-report {
-  padding-bottom: 10px; }
-  .row-report .worksheet {
-    display: inline-block;
-    vertical-align: top;
-    width: 40%;
-    padding: 20px 48px 10px 10px; }
-    .row-report .worksheet .row {
-      width: 100%;
-      white-space: nowrap; }
-    .row-report .worksheet .column {
-      display: inline-block; }
-    .row-report .worksheet > .header {
-      font-size: 1em;
-      font-weight: bold;
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid black; }
-    .row-report .worksheet .row {
-      margin: 6px 0px 0px 2px;
-      overflow: auto; }
-      .row-report .worksheet .row .header {
-        width: 68%;
-        margin-right: 8px; }
-      .row-report .worksheet .row .value {
-        width: 24%;
-        text-align: right; }
-    .row-report .worksheet .column {
-      vertical-align: top; }
+@media screen {
+  .row-report {
+    padding-bottom: 10px; } }
+.row-report .worksheet {
+  display: inline-block;
+  vertical-align: top;
+  width: 268px;
+  padding: 20px 48px 10px 10px; }
+  .row-report .worksheet .row {
+    width: 100%;
+    white-space: nowrap; }
+  .row-report .worksheet .column {
+    display: inline-block; }
+  .row-report .worksheet ::selection {
+    background: #9999bb; }
+  @media screen {
+    .row-report .worksheet {
+      width: 40%; } }
+  .row-report .worksheet > .header {
+    font-size: 1em;
+    font-weight: bold;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid black; }
+  .row-report .worksheet .row {
+    margin: 6px 0px 0px 2px;
+    overflow: auto; }
+    .row-report .worksheet .row .header {
+      width: 68%;
+      margin-right: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+    .row-report .worksheet .row .value {
+      width: 24%;
+      text-align: right; }
+  .row-report .worksheet .column {
+    vertical-align: top; }
 
 /* /home/ryan/github/meramec/report/app/stylesheets/layout.sass */
 * {
@@ -219,10 +266,12 @@
   padding: 0px; }
 
 body {
-  font-family: "Open Sans"; }
+  font-family: "Open Sans";
+  cursor: default; }
 
-.page .view-area {
-  margin: 26px; }
+@media screen {
+  .page .view-area {
+    margin: 26px; } }
 
 .link {
   cursor: pointer;
@@ -257,13 +306,13 @@ ul.menu {
   ul.menu li .link {
     padding: 10px 20px 10px 20px;
     overflow: hidden;
-    background-color: #8888aa;
+    background-color: #9999bb;
     color: white; }
     ul.menu li .link:hover {
-      background-color: #777799;
+      background-color: #8888aa;
       color: white; }
     ul.menu li .link.active {
-      background-color: #444488; }
+      background-color: #444466; }
     ul.menu li .link.active:hover {
-      background-color: #333377; }
+      background-color: #333355; }
 

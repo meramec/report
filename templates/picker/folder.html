@@ -4,7 +4,7 @@
     {{ folder.name }}
   </div>
   <div class='contents' ng-show='folder.open'>
-    <folder ng-repeat='folder in folder.folders'></folder>
-    <file ng-repeat='file in folder.files'></file>
+    <folder ng-repeat='folder in folder.folders | orderBy : "name"'></folder>
+    <file ng-repeat='file in folder.files | orderBy : "name"'></file>
   </div>
 </div>
