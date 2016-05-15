@@ -2,25 +2,31 @@
   width: 100%
   padding: 0px 0px 0px 0px
   margin-bottom: 12px
-  background-color: #efefef
-  box-shadow: 0px 2px 2px #ddd
+
+  @media screen
+    background-color: #efefef
+    box-shadow: 0px 2px 2px #ddd
 
   .title
-    padding: 6px 0px 4px 40px
-    color: white
-    background-color: #446
-    box-shadow: 0px 2px 2px #446
-    font-size: 2.4em
+    padding: 6px 0px 4px 0px
+    font-size: 2.2em
     font-weight: bold
     vertical-align: top
+    @media screen
+      padding-left: 40px
+      color: white
+      background-color: #446
+      box-shadow: 0px 2px 2px #446
 
   .subtitle
-    padding: 2px 30px 6px 40px
-    color: #444
+    padding: 2px 30px 6px 0px
     font-size: 1.4em
     font-weight: bold
     margin-bottom: 12px
     vertical-align: top
+    @media screen
+      padding-left: 40px
+      color: #444
 
     .link
       font-size: 0.8em
@@ -33,10 +39,10 @@
         background-color: #ddd
 
   .user
-    position: absolute
-    top: 0
-    right: 0
-    padding: 8px 32px 8px 0px
+    float: right
+    padding-right: 32px
+    font-size: medium
+    font-weight: normal
     .icon
       width: 50px
       color: #ddd

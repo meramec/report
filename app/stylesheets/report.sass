@@ -41,14 +41,17 @@
         background-color: lightgray
 
 .row-report
-  padding-bottom: 10px
+  @media screen
+    padding-bottom: 10px
 
   .worksheet
     +table
     display: inline-block
     vertical-align: top
-    width: 40%
+    width: 268px
     padding: 20px 48px 10px 10px
+    @media screen
+      width: 40%
 
     >.header
       +header
@@ -60,6 +63,8 @@
       .header
         width: 68%
         margin-right: 8px
+        overflow: hidden
+        text-overflow: ellipsis
 
       .value
         width: 24%

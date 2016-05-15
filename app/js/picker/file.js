@@ -15,7 +15,7 @@
     $scope.onClick = function(e) {
       e.stopPropagation();
 
-      $scope.$emit('select-file', $scope.file.id);
+      $scope.$emit('select-file', $scope.file);
     };
   }
 })();

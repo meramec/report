@@ -14,8 +14,10 @@
 
   function SpreadsheetController($scope, $location, sheets) {
 
+    $scope.row = getRowFromPath();
+
     $scope.$on('$locationChangeSuccess', function() {
-      $scope.row = $location.path().replace(/^\//, '');
+      $scope.row = getRowFromPath();
     });
 
     $scope.$watch('id', function() {
@@ -31,5 +33,10 @@
       $scope.row = row;
       $location.path(row);
     };
+
+    function getRowFromPath() {
+      return $location.path().replace(/^\//, '');
+    }
   }
+
 })();

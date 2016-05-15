@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('report', report);
-  angular.module('report.generator').controller('ReportController', ['$scope', '$timeout', 'auth', ReportController]);
+  angular.module('report.generator').controller('ReportController', ['$scope', '$window', '$location', 'auth', ReportController]);
 
   function report() {
     return {
@@ -11,7 +11,7 @@
     };
   }
 
-  function ReportController($scope, $timeout, auth) {
+  function ReportController($scope, $window, $location, auth) {
     $scope.report = {
       title: 'Spreadsheet',
       subtitle: 'Report'
@@ -21,19 +21,27 @@
 
     function onReady() {
       $scope.$broadcast('authenticated');
-    //  $scope.$broadcast('choose-file');
+      $scope.id = localStorage.getItem('id');
+
+      if(! $scope.id)
+        $scope.$broadcast('choose-file');
     }
+
+    $scope.goHome = function() {
+      $location.path('/');
+    };
 
     $scope.chooseFile = function() {
       $scope.$broadcast('choose-file');
     }
 
     $scope.print = function() {
-
+      $window.print();
     }
 
-    $scope.$on('select-file', function(e, id) {
-      $scope.id = id;
+    $scope.$on('select-file', function(e, file) {
+      $scope.id = file.id;
+      localStorage.setItem('id', file.id);
     });
   }
 })();

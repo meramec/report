@@ -1,6 +1,9 @@
 .app-title.header-banner
   .title
     {{ report.title }}
+
+    %user.screen-only
+
   .subtitle
     %ul.inline
       %li
@@ -8,9 +11,10 @@
       %li{ 'ng-repeat' => 'nested in report.nestedSubtitle' }
         {{ nested }}
 
-    .link{ 'ng-click' => 'chooseFile()' }
-      %i.fa.fa-folder
-    .link{ 'ng-click' => 'print()' }
+    .link.screen-only{ 'ng-click' => 'print()' }
       %i.fa.fa-print
+    .link.screen-only{ 'ng-click' => 'chooseFile()' }
+      %i.fa.fa-folder
+    .link.screen-only{ 'ng-click' => 'goHome()' }
+      %i.fa.fa-home
 
-  %user

@@ -32,10 +32,10 @@
 
           $scope.rowReport.push(report);
 
-          _.each(_.tail(row, 1), function(column, j) {
+          _.each(_.tail(worksheet.headers, 1), function(header, j) {
             report.columns.push({
-              name: worksheet.headers[j+1],
-              value: column
+              name: header,
+              value: row[j+1]
             });
           });
         }

@@ -11,13 +11,18 @@
 
           %ul.menu
             %li
-              .link{ 'ng-class' => '{ active : showDrive }' }
+              .link{ 'ng-class' => '{ active: showDrive }', 'ng-click' => 'onBrowse()' }
                 Browse Drive
             %li
-              .link{ 'ng-class' => '{ active: !showDrive }' }
+              .link{ 'ng-class' => '{ active: !showDrive, disabled: !hasRecent }', 'ng-click' => 'onRecent()' }
                 Recent
 
         .body
           .content
-            %browse-drive
+            %browse-drive{ 'ng-show' => 'showDrive' }
+            .recent-files{ 'ng-show' => '!showDrive'}
+              %file{ 'ng-repeat' => 'file in recentFiles' }
+
+
+
 
