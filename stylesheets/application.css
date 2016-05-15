@@ -86,8 +86,7 @@
       background-color: #efefef;
       box-shadow: 0px 2px 2px #dddddd; }
       .header-banner .editable {
-        cursor: pointer;
-        padding-right: 10px; } }
+        cursor: pointer; } }
   .header-banner .title {
     padding: 6px 0px 4px 0px;
     font-size: 2.2em;
@@ -149,7 +148,7 @@
       padding: 22px;
       background-color: white;
       color: #222222;
-      box-shadow: 2px 1px 4px #444444; }
+      box-shadow: 2px 1px 4px #dddddd; }
       .header-banner .user .info .name {
         font-size: 0.9em;
         font-weight: bold; }
@@ -208,7 +207,7 @@
     @media screen {
       .table .column + .column {
         width: 160px; } }
-.table .header {
+.table > .header {
   font-size: 1em;
   font-weight: bold;
   padding-bottom: 6px;
@@ -221,6 +220,35 @@
     background-color: #efefef; }
   .table .data .row:hover {
     background-color: lightgrey; }
+.table .details {
+  display: inline-block; }
+  .table .details .link.active {
+    color: black;
+    outline: solid thin #eeeeee;
+    outline-offset: 20px; }
+  .table .details .worksheet {
+    font-size: default;
+    font-weight: normal;
+    background-color: white;
+    box-shadow: 1px 2px 4px #dddddd;
+    padding: 20px;
+    position: absolute;
+    transform: translate(-20px, 4px); }
+    .table .details .worksheet .row {
+      margin: 6px 0px 0px 2px;
+      overflow: auto; }
+      .table .details .worksheet .row .header {
+        width: 200px;
+        text-align: left;
+        margin-right: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+      .table .details .worksheet .row .value {
+        width: 30px;
+        text-align: right; }
+    .table .details .worksheet .column {
+      padding: 0px;
+      margin-top: -2px; }
 
 @media screen {
   .row-report {

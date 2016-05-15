@@ -357,7 +357,7 @@
     };
 
     var clientjs = $document[0].createElement('script');
-    clientjs.src = 'https://apis.google.com/js/client.js?onload=onClientLoaded';
+    clientjs.src = 'https://apis.google.com/js/client:platform.js?onload=onClientLoaded';
     $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
@@ -373,8 +373,8 @@
     };
 
     this.signOut = function() {
-      gapi.auth.setToken(null);
-      gapi.auth.signOut();
+      var auth = gapi.auth2.getAuthInstance();
+      auth.signOut();
     };
 
     function Authorization(clientId, scopes) {
@@ -387,14 +387,23 @@
 
       this.authorize = function(callback) {
         clientLoaded.wait(function() {
-          gapi.auth.authorize(options, function(result) {
-            if(result && ! result.error) {
-              callback();
-              authorized.ready();
-            } else if(options.immediate) {
-              options.immediate = false;
-              self.authorize(options, callback);
-            }
+          gapi.load('auth2', function() {
+            gapi.auth2.init(options).then(function() {
+              var auth = gapi.auth2.getAuthInstance();
+              if(auth.isSignedIn.get()) {
+                authorized.ready();
+                callback();
+              } else {
+                auth.signIn().then(function() {
+                  authorized.ready();
+                  callback();
+                });
+              }
+
+              auth.isSignedIn.listen(function() {
+
+              });
+            });
           });
         });
       };
@@ -403,7 +412,9 @@
     function AuthToken() {
       this.getToken = function(callback) {
         authorized.wait(function() {
-          callback(gapi.auth.getToken().access_token);
+          var auth = gapi.auth2.getAuthInstance();
+          var user = auth.currentUser.get();
+          callback(user.getAuthResponse().access_token);
         });
       }
     }
@@ -492,7 +503,9 @@
   function AppTitleController($scope, $window, path) {
 
     function updateTitle(path) {
-      var components = [ $scope.report.title, $scope.report.subtitle, path ];
+      var components = [ $scope.report.title, $scope.report.subtitle ];
+      if($scope.id)
+        components.push(path);
 
       $window.document.title = _.compact(components).join(' | ');
       $scope.path = path;
@@ -547,7 +560,7 @@
 // /home/ryan/github/meramec/report/app/js/reportGenerator/report.js
 (function() {
   angular.module('report.generator').directive('report', report);
-  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'auth', ReportController]);
+  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'metadata', 'auth', ReportController]);
 
   function report() {
     return {
@@ -558,14 +571,12 @@
     };
   }
 
-  function ReportController($scope, $window, path, auth) {
+  function ReportController($scope, $window, path, metadata, auth) {
 
-    var metadata;
+    $scope.report = {};
+    $scope.id = localStorage.getItem('id');
 
-    $scope.report = {
-      title: 'Enter Report Title',
-      subtitle: 'Enter Report Subtitle'
-    };
+    metadata.watch($scope);
 
     auth.authorize(onReady);
 
@@ -573,22 +584,7 @@
       $scope.$broadcast('authenticated');
       if(! $scope.id)
         $scope.$broadcast('choose-file');
-  
     }
-      $scope.id = localStorage.getItem('id');
-
-      var md = localStorage.getItem('metadata');
-      if($scope.id && md) {
-        metadata = JSON.parse(md);
-        if(metadata[$scope.id]) {
-          if(metadata[$scope.id].title)
-            $scope.report.title = metadata[$scope.id].title;
-          if(metadata[$scope.id].subtitle)
-            $scope.report.subtitle = metadata[$scope.id].subtitle;
-        }
-      }
-
-    //}
 
     $scope.goHome = function() {
       path.set('/');
@@ -606,39 +602,66 @@
       $scope.id = file.id;
       localStorage.setItem('id', file.id);
     });
+  }
+})();
 
-    $scope.$watch('report.title', function() {
-      var md = getMetadata();
-      if(md) {
-        md.title = $scope.report.title;
-        saveMetadata();
-      }
-    });
-    $scope.$watch('report.subtitle', function() {
-      var md = getMetadata();
-      if(md) {
-        md.subtitle = $scope.report.subtitle;
-        saveMetadata();
-      }
-    });
+// /home/ryan/github/meramec/report/app/js/reportGenerator/metadata.js
+(function() {
+  angular.module('report.generator').service('metadata', metadata);
 
-    function getMetadata() {
-      if(! $scope.id)
-        return;
-      if(! metadata)
-        metadata = {};
-      if(! metadata[$scope.id])
-        metadata[$scope.id] = {
-          report: {}
-        };
+  function metadata() {
 
-      return metadata[$scope.id];
+    var raw = localStorage.getItem('metadata');
+    var parsed;
+
+    try {
+      parsed = JSON.parse(raw);
+    } catch(e) { }
+
+    if(! parsed)
+      parsed = {};
+
+    this.watch = function(scope) {
+      onIdChange(scope);
+
+      scope.$watch('id', function(){
+        onIdChange(scope);
+      });
+      scope.$watch('report', function(){
+        onReportChange(scope);
+      }, true);
     }
 
-    function saveMetadata() {
-      localStorage.setItem('metadata', JSON.stringify(metadata));
+    function onIdChange(scope) {
+      var md = scope.id && parsed[scope.id];
+
+      updateReport(scope.report, md, 'title');
+      updateReport(scope.report, md, 'subtitle');
+    }
+
+    function updateReport(report, md, key) {
+      if(md && md[key]) {
+        report[key] = md[key];
+      } else {
+        report[key] = 'Enter Report ' + key.charAt(0).toUpperCase() + key.slice(1);
+      }
+    }
+
+    function onReportChange(scope) {
+      if(! scope.id)
+        return;
+
+      var md = parsed[scope.id];
+      if(! md)
+        md = parsed[scope.id] = {};
+
+      md.title = scope.report.title;
+      md.subtitle = scope.report.subtitle;
+
+      localStorage.setItem('metadata', JSON.stringify(parsed));
     }
   }
+
 })();
 
 // /home/ryan/github/meramec/report/app/js/reportGenerator/editable.js
@@ -809,6 +832,7 @@
 
       $scope.primaryHeader = primaryHeader();
       $scope.summaries = summarizeWorksheets();
+
     });
 
     function primaryHeader() {
@@ -821,23 +845,21 @@
       var summaries = [];
       var byName = {};
 
-      if($scope.spreadsheet) {
-        _.each($scope.spreadsheet.worksheets, function(worksheet, k) {
-          _.each(worksheet.data, function(row) {
-            var name = row[0];
-            var summary = byName[name];
-            if(! summary) {
-              summary = byName[name] = {
-                name: name,
-                totals: []
-              };
-              summaries.push(summary);
-            }
+      _.each($scope.spreadsheet.worksheets, function(worksheet, k) {
+        _.each(worksheet.data, function(row) {
+          var name = row[0];
+          var summary = byName[name];
+          if(! summary) {
+            summary = byName[name] = {
+              name: name,
+              totals: []
+            };
+            summaries.push(summary);
+          }
 
-            summary.totals[k] = _.filter(_.tail(row, 1), function(value) { return !!value}).length;
-          });
+          summary.totals[k] = _.filter(_.tail(row, 1), function(value) { return !!value}).length;
         });
-      }
+      });
 
       return summaries;
     }
@@ -846,6 +868,48 @@
       if($scope.spreadsheet && $scope.spreadsheet.worksheets)
         return $scope.spreadsheet.worksheets[0]; 
     }
+  }
+})();
+
+// /home/ryan/github/meramec/report/app/js/reportGenerator/details.js
+(function() {
+  angular.module('report.generator').directive('details', details);
+  angular.module('report.generator').controller('DetailsController', ['$scope', '$document', DetailsController]);
+
+  function details() {
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'templates/reportGenerator/details.html',
+      controller: 'DetailsController'
+    };
+  }
+
+  function DetailsController($scope, $document) {
+    $scope.worksheet.details =  _.map(_.tail($scope.worksheet.headers, 1), function(name, j) {
+      var entries = _.filter($scope.worksheet.data, function(row) {
+        return row[j+1];
+      });
+
+      return {name: name, value: entries.length};
+    });
+
+    $scope.onClick = function(e) {
+      e.stopPropagation();
+      $scope.showDetails = ! $scope.showDetails;
+
+      function handleClick() {
+        $scope.showDetails = false;
+        $scope.$digest();
+      }
+
+      if($scope.showDetails) {
+        $document.bind('click', handleClick);
+      
+      } else {
+        $document.unbind('click', handleClick);
+      }
+    };
   }
 })();
 
@@ -976,7 +1040,7 @@
     $scope.$on('choose-file', function() {
       $scope.recentFiles = recentFiles.get();
       $scope.openModal = true;
-      $scope.showDrive = ! $scope.recentFiles;
+      $scope.showDrive = $scope.recentFiles.length == 0;
     });
     $scope.$on('select-file', function(e, file) {
       $scope.dismiss();
