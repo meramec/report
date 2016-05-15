@@ -11,7 +11,7 @@
     };
 
     var clientjs = $document[0].createElement('script');
-    clientjs.src = 'https://apis.google.com/js/client.js?onload=onClientLoaded';
+    clientjs.src = 'https://apis.google.com/js/client:platform.js?onload=onClientLoaded';
     $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
@@ -27,8 +27,8 @@
     };
 
     this.signOut = function() {
-      gapi.auth.setToken(null);
-      gapi.auth.signOut();
+      var auth = gapi.auth2.getAuthInstance();
+      auth.signOut();
     };
 
     function Authorization(clientId, scopes) {
@@ -41,14 +41,23 @@
 
       this.authorize = function(callback) {
         clientLoaded.wait(function() {
-          gapi.auth.authorize(options, function(result) {
-            if(result && ! result.error) {
-              callback();
-              authorized.ready();
-            } else if(options.immediate) {
-              options.immediate = false;
-              self.authorize(options, callback);
-            }
+          gapi.load('auth2', function() {
+            gapi.auth2.init(options).then(function() {
+              var auth = gapi.auth2.getAuthInstance();
+              if(auth.isSignedIn.get()) {
+                authorized.ready();
+                callback();
+              } else {
+                auth.signIn().then(function() {
+                  authorized.ready();
+                  callback();
+                });
+              }
+
+              auth.isSignedIn.listen(function() {
+
+              });
+            });
           });
         });
       };
@@ -57,7 +66,9 @@
     function AuthToken() {
       this.getToken = function(callback) {
         authorized.wait(function() {
-          callback(gapi.auth.getToken().access_token);
+          var auth = gapi.auth2.getAuthInstance();
+          var user = auth.currentUser.get();
+          callback(user.getAuthResponse().access_token);
         });
       }
     }
