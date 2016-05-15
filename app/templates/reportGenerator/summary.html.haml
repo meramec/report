@@ -5,7 +5,7 @@
         .value.column<
           {{ primaryHeader }}
         .value.column{ 'ng-repeat' => 'worksheet in spreadsheet.worksheets' }<
-          {{ worksheet.name }}
+          %details
 
     .data
       .row{ 'ng-repeat' => 'summary in summaries', 'ng-click' => 'onClick(summary.name)' }

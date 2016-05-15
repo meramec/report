@@ -18,6 +18,7 @@
 
       $scope.primaryHeader = primaryHeader();
       $scope.summaries = summarizeWorksheets();
+
     });
 
     function primaryHeader() {
@@ -30,23 +31,21 @@
       var summaries = [];
       var byName = {};
 
-      if($scope.spreadsheet) {
-        _.each($scope.spreadsheet.worksheets, function(worksheet, k) {
-          _.each(worksheet.data, function(row) {
-            var name = row[0];
-            var summary = byName[name];
-            if(! summary) {
-              summary = byName[name] = {
-                name: name,
-                totals: []
-              };
-              summaries.push(summary);
-            }
+      _.each($scope.spreadsheet.worksheets, function(worksheet, k) {
+        _.each(worksheet.data, function(row) {
+          var name = row[0];
+          var summary = byName[name];
+          if(! summary) {
+            summary = byName[name] = {
+              name: name,
+              totals: []
+            };
+            summaries.push(summary);
+          }
 
-            summary.totals[k] = _.filter(_.tail(row, 1), function(value) { return !!value}).length;
-          });
+          summary.totals[k] = _.filter(_.tail(row, 1), function(value) { return !!value}).length;
         });
-      }
+      });
 
       return summaries;
     }
