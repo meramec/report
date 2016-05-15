@@ -14,7 +14,9 @@
   function AppTitleController($scope, $window, path) {
 
     function updateTitle(path) {
-      var components = [ $scope.report.title, $scope.report.subtitle, path ];
+      var components = [ $scope.report.title, $scope.report.subtitle ];
+      if($scope.id)
+        components.push(path);
 
       $window.document.title = _.compact(components).join(' | ');
       $scope.path = path;

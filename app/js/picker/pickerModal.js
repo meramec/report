@@ -18,7 +18,7 @@
     $scope.$on('choose-file', function() {
       $scope.recentFiles = recentFiles.get();
       $scope.openModal = true;
-      $scope.showDrive = ! $scope.recentFiles;
+      $scope.showDrive = $scope.recentFiles.length == 0;
     });
     $scope.$on('select-file', function(e, file) {
       $scope.dismiss();
