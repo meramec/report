@@ -112,17 +112,13 @@
       .header-banner .subtitle {
         padding-left: 40px;
         color: #444444; } }
-    .header-banner .subtitle .link {
+    .header-banner .subtitle .link.round {
       font-size: 0.8em;
-      float: right;
       padding: 8px;
-      margin-right: 4px;
-      border-radius: 50%;
-      border: solid thin #dddddd; }
-      .header-banner .subtitle .link:hover {
+      border-color: #dddddd; }
+      .header-banner .subtitle .link.round:hover {
         background-color: #dddddd; }
   .header-banner .user {
-    float: right;
     padding-right: 32px;
     font-size: medium;
     font-weight: normal; }
@@ -299,12 +295,22 @@ body {
 
 @media screen {
   .page .view-area {
-    margin: 26px; } }
+    margin: 40px; } }
+
+.left {
+  float: left; }
+
+.right {
+  float: right; }
 
 .link {
   cursor: pointer;
   padding-left: 8px;
   color: gray; }
+  .link.round {
+    border-radius: 50%;
+    border-style: solid;
+    border-width: thin; }
   .link:not(.disabled):hover {
     color: black; }
 

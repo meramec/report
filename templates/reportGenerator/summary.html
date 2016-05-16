@@ -9,7 +9,7 @@
     <div class='data'>
       <div class='row' ng-click='onClick(summary.name)' ng-repeat='summary in summaries'>
         <div class='value column'>{{ summary.name }}</div>
-        <div class='value column' ng-repeat='total in summary.totals'>{{ total }}</div>
+        <div class='value column' ng-repeat='total in summary.totals track by $index'>{{ total }}</div>
       </div>
     </div>
   </div>
