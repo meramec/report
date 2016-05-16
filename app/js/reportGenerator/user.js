@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('user', user);
-  angular.module('report.generator').controller('UserController', ['$scope', '$document', 'me', 'client', UserController]);
+  angular.module('report.generator').controller('UserController', ['$scope', '$timeout', 'me', 'client', 'toggleUnique', UserController]);
 
   function user() {
     return {
@@ -12,7 +12,7 @@
     };
   }
 
-  function UserController($scope, $document, me, client) {
+  function UserController($scope, $timeout, me, client, toggleUnique) {
     $scope.$on('authenticated', function() {
       me.load(function(user) {
         $scope.user = user;
@@ -24,16 +24,13 @@
       e.stopPropagation();
       $scope.showInfo = ! $scope.showInfo;
 
-      function handleClick() {
-        $scope.showInfo = false;
-        $scope.$digest();
-      }
-
       if($scope.showInfo) {
-        $document.bind('click', handleClick);
-      
-      } else {
-        $document.unbind('click', handleClick);
+        toggleUnique.onClickOff(function() {
+          $scope.showInfo = false;
+          $timeout(function() {
+            $scope.$digest();
+          });
+        });
       }
     };
 

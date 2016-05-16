@@ -2,7 +2,7 @@
   .title
     %editable{ 'key' => 'title' }
 
-    %user.screen-only
+    %user.right.screen-only
 
   .subtitle
     %ul.inline
@@ -11,10 +11,10 @@
       %li{ 'ng-if' => 'id && path' }
         {{ path }}
 
-    .link.screen-only{ 'ng-click' => 'print()' }
+    .link.right.round.screen-only{ 'ng-click' => 'print()' }
       %i.fa.fa-print
-    .link.screen-only{ 'ng-click' => 'chooseFile()' }
+    .link.right.round.screen-only{ 'ng-click' => 'chooseFile()' }
       %i.fa.fa-folder
-    .link.screen-only{ 'ng-click' => 'goHome()' }
+    .link.right.round.screen-only{ 'ng-click' => 'goHome()' }
       %i.fa.fa-home
 

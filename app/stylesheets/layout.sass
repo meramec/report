@@ -11,10 +11,20 @@ body
     @media screen
       margin: 40px
 
+.left
+  float: left
+
+.right
+  float: right
+
 .link
   cursor: pointer
   padding-left: 8px
   color: gray
+  &.round
+    border-radius: 50%
+    border-style: solid
+    border-width: thin
 
   &:not(.disabled):hover
     color: black

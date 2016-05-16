@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('details', details);
-  angular.module('report.generator').controller('DetailsController', ['$scope', '$document', DetailsController]);
+  angular.module('report.generator').controller('DetailsController', ['$scope', '$timeout', 'toggleUnique', DetailsController]);
 
   function details() {
     return {
@@ -11,7 +11,7 @@
     };
   }
 
-  function DetailsController($scope, $document) {
+  function DetailsController($scope, $timeout, toggleUnique) {
     $scope.worksheet.details =  _.map(_.tail($scope.worksheet.headers, 1), function(name, j) {
       var entries = _.filter($scope.worksheet.data, function(row) {
         return row[j+1];
@@ -22,18 +22,16 @@
 
     $scope.onClick = function(e) {
       e.stopPropagation();
+
       $scope.showDetails = ! $scope.showDetails;
 
-      function handleClick() {
-        $scope.showDetails = false;
-        $scope.$digest();
-      }
-
       if($scope.showDetails) {
-        $document.bind('click', handleClick);
-      
-      } else {
-        $document.unbind('click', handleClick);
+        toggleUnique.onClickOff(function() {
+          $scope.showDetails = false;
+          $timeout(function() {
+            $scope.$digest();
+          });
+        });
       }
     };
   }
