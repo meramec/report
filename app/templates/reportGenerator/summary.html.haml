@@ -11,5 +11,5 @@
       .row{ 'ng-repeat' => 'summary in summaries', 'ng-click' => 'onClick(summary.name)' }
         .value.column<
           {{ summary.name }}
-        .value.column{ 'ng-repeat' => 'total in summary.totals' }<
+        .value.column{ 'ng-repeat' => 'total in summary.totals track by $index' }<
           {{ total }}
