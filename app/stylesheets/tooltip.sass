@@ -1,0 +1,22 @@
+[tooltip]:hover:after
+  position: absolute
+  transform: translate(-160px, 20px)
+  width: 180px
+  padding: 10px
+  background: #333
+  background: rgba(0,0,0,0.8)
+  font-size: small
+  color: white
+  content: attr(tooltip)
+
+[tooltip]:hover:before
+  position: absolute
+  transform: translate(0px, 21.7px)
+  width: 0
+  height: 0
+  border: solid transparent
+  border-color: rgba(255, 255, 255, 0)
+  border-bottom-color: #333
+  border-width: 8px
+  content: ' '
+  

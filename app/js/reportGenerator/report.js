@@ -30,7 +30,7 @@
       path.set('/');
     };
 
-    $scope.orderView = function() {
+    $scope.totalsView = function() {
       path.set('/all/totals')
     };
 

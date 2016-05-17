@@ -2,7 +2,7 @@
   .title
     %editable{ 'key' => 'title' }
 
-    %user.right.screen-only
+    %user.right.screen-only{ 'tooltip' => 'Logged in as...' }
 
   .subtitle
     %ul.inline
@@ -11,12 +11,12 @@
       %li{ 'ng-if' => 'id && path' }
         {{ path }}
 
-    .link.right.round.screen-only{ 'ng-click' => 'print()' }
+    .link.right.round.screen-only{ 'ng-click' => 'print()', 'tooltip' => 'Print the current page' }
       %i.fa.fa-print
-    .link.right.round.screen-only{ 'ng-click' => 'chooseFile()' }
+    .link.right.round.screen-only{ 'ng-click' => 'chooseFile()', 'tooltip' => 'Open the browse dialog to select a spreadsheet' }
       %i.fa.fa-folder-open
-    .link.right.round.screen-only{ 'ng-click' => 'orderView()' }
+    .link.right.round.screen-only{ 'ng-click' => 'totalsView()', 'tooltip' => 'See the column totals for each worksheet' }
       %i.fa.fa-columns
-    .link.right.round.screen-only{ 'ng-click' => 'goHome()' }
+    .link.right.round.screen-only{ 'ng-click' => 'goHome()', 'tooltip' => 'Go to the summary view' }
       %i.fa.fa-home
 
