@@ -4,6 +4,10 @@ describe('AppTitle', function() {
     document: {}
   };
 
+  var path = {
+    get: function()
+  };
+
   var title = 'page title';
   var subtitle = 'page subtitle';
 
@@ -13,7 +17,7 @@ describe('AppTitle', function() {
       subtitle: subtitle
     };
 
-    this.controller('AppTitleController', { $scope: this.scope, $window: myWindow });
+    this.controller('AppTitleController', { $scope: this.scope, $window: myWindow, path: path });
   });
 
   describe('on creation', function() {

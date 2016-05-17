@@ -1,23 +1,23 @@
 (function() {
-  angular.module('google.api').service('drive', ['client', 'latch',  drive]);
+  angular.module('google.api').service('drive', ['client', drive]);
 
-  function drive(client, latch) {
+  function drive(client) {
     var lib = client.load('drive', 'v3');
 
     this.buildTree = function(drive, types) {
       var notify = new Notify();
       lib.start(function() {
-        new BuildTree(drive, types, latch, notify).begin();
+        new BuildTree(drive, types, notify).begin();
       });
 
       return notify;
     }; 
   }
 
-  function BuildTree(drive, types, latch, notify) {
+  function BuildTree(drive, types, notify) {
     var self = this;
 
-    var onComplete = latch.create(2);
+    var onComplete = new Latch(2);
     onComplete.wait(function() {
       notify.onNotifyComplete();
     });

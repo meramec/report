@@ -1,10 +1,4 @@
 describe('Latch', function() {
-  var subject;
-
-  beforeEach(inject(function(_latch_) {
-    subject = _latch_;
-  }));
-
   var w1;
   var w2;
   var myLatch;
@@ -15,7 +9,7 @@ describe('Latch', function() {
 
   describe('default waits for one', function() {
     beforeEach(function() {
-      myLatch = subject.create();
+      myLatch = new Latch();
     });
 
     describe('wait before ready', function() {
@@ -52,7 +46,7 @@ describe('Latch', function() {
 
   describe('waiting for more than one', function() {
     beforeEach(function() {
-      myLatch = subject.create(2);
+      myLatch = new Latch(2);
       myLatch.wait(w1);
       myLatch.wait(w2);
     });

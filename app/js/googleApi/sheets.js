@@ -1,7 +1,7 @@
 (function() {
-  angular.module('google.api').service('sheets', ['client', 'latch', '$http', sheets]);
+  angular.module('google.api').service('sheets', ['client', '$http', sheets]);
 
-  function sheets(client, latch, $http) {
+  function sheets(client, $http) {
     var self = this;
 
     self.open = function(id, callback) {
@@ -24,7 +24,7 @@
 
       function onWorksheetList(response) {
         var doc = response.data.feed;
-        var onComplete = latch.create(doc.entry.length);
+        var onComplete = new Latch(doc.entry.length);
 
         onComplete.wait(function() {
           callback({ title: title, worksheets: worksheets });

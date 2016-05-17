@@ -1,10 +1,10 @@
 (function() {
-  angular.module('google.api').service('client', ['$window', '$document', '$http', 'latch', client]);
+  angular.module('google.api').service('client', ['$window', '$document', '$http', client]);
 
-  function client($window, $document, $http, latch) {
+  function client($window, $document, $http) {
 
-    var clientLoaded = latch.create();
-    var authorized = latch.create();
+    var clientLoaded = new Latch();
+    var authorized = new Latch();
 
     var authorization;
 
@@ -82,7 +82,7 @@
     }
 
     function Library(lib, version) {
-      var libraryLoaded = latch.create();
+      var libraryLoaded = new Latch();
 
       authorized.wait(function() {
         gapi.client.load(lib, version, function() {
