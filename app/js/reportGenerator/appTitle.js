@@ -14,12 +14,16 @@
   function AppTitleController($scope, $window, path) {
 
     function updateTitle(path) {
+      var displayPath = _.map(path.split('/'), function(part) {
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      }).join(' | ');
+
       var components = [ $scope.report.title, $scope.report.subtitle ];
       if($scope.id)
-        components.push(path);
+        components.push(displayPath);
 
       $window.document.title = _.compact(components).join(' | ');
-      $scope.path = path;
+      $scope.path = displayPath;
     }
 
     updateTitle(path.get());

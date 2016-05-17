@@ -20,28 +20,52 @@
       $scope.rowReport = [];
 
       _.each($scope.spreadsheet.worksheets, function(worksheet) {
+        var row = forWorksheet(worksheet);
+        if(! row) { return; }
+
+        var report = {
+          name: worksheet.name,
+          columns: []
+        };
+
+        $scope.rowReport.push(report);
+
+        _.each(_.tail(worksheet.headers, 1), function(header, j) {
+          report.columns.push(row(header, j + 1));
+        });
+      });
+    });
+
+    function forWorksheet(worksheet) {
+      if($scope.row === 'all/totals') {
+        return totalsReport(worksheet.data);
+      }
+      else {
         var row = _.find(worksheet.data, function(row) {
           return row[0] === $scope.row;
         });
-
         if(row) {
-          var report = {
-            name: worksheet.name,
-            columns: []
-          };
-
-          $scope.rowReport.push(report);
-
-          _.each(_.tail(worksheet.headers, 1), function(header, j) {
-            report.columns.push({
-              name: header,
-              value: row[j+1]
-            });
-          });
+          return singleRowReport(row);
         }
-      });
+      }
+    }
 
-    });
+    function singleRowReport(row) {
+      return function(header, j) {
+        return {
+          name: header,
+          value: row[j]
+        };
+      };
+    }
+    function totalsReport(data) {
+      return function(header, j) {
+        return {
+          name: header,
+          value: _.filter(data, function(row) { return row[j] }).length
+        }
+      }
+    }
   }
 
 })();

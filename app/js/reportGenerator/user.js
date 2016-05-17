@@ -21,10 +21,10 @@
     });
 
     $scope.toggleInfo = function(e) {
-      e.stopPropagation();
       $scope.showInfo = ! $scope.showInfo;
 
       if($scope.showInfo) {
+        e.stopPropagation();
         toggleUnique.onClickOff(function() {
           $scope.showInfo = false;
           $timeout(function() {

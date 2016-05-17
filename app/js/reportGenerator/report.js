@@ -30,6 +30,10 @@
       path.set('/');
     };
 
+    $scope.orderView = function() {
+      path.set('/all/totals')
+    };
+
     $scope.chooseFile = function() {
       $scope.$broadcast('choose-file');
     }
