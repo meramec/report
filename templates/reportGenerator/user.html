@@ -3,7 +3,7 @@
     <div class='logged-in' ng-if='user.id'>
       <img ng-click='toggleInfo($event)' ng-src='{{ user.image.url }}'>
     </div>
-    <div class='not-logged-in' ng-if='! user.id'>
+    <div class='not-logged-in' ng-click='signIn()' ng-if='! user.id'>
       <i class='fa fa-user'></i>
     </div>
   </div>

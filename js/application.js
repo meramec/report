@@ -350,7 +350,9 @@
   function client($window, $document, $http, latch) {
 
     var clientLoaded = latch.create();
-    authorized = latch.create();
+    var authorized = latch.create();
+
+    var authorization;
 
     $window.onClientLoaded = function() {
       clientLoaded.ready();
@@ -361,7 +363,9 @@
     $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
-      return new Authorization(clientId, scopes);
+      authorization = new Authorization(clientId, scopes);
+
+      return authorization;
     };
 
     this.authToken = function() {
@@ -370,6 +374,10 @@
 
     this.load = function(lib, version) {
       return new Library(lib, version);
+    };
+
+    this.signIn = function() {
+      authorization.authorize(function() {});
     };
 
     this.signOut = function() {
@@ -796,6 +804,10 @@
           });
         });
       }
+    };
+
+    $scope.signIn = function() {
+      client.signIn();
     };
 
     $scope.signOut = function() {

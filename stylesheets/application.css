@@ -155,11 +155,14 @@
         .header-banner .user .icon img:hover {
           opacity: 0.8; }
       .header-banner .user .icon .fa-user {
+        cursor: pointer;
         opacity: 0.5;
         font-size: 46px;
         text-align: center;
         line-height: 50px;
         width: 45px; }
+        .header-banner .user .icon .fa-user:hover {
+          color: #bbbbbb; }
     .header-banner .user .info {
       position: absolute;
       top: 70;
