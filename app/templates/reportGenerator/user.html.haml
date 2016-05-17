@@ -3,7 +3,7 @@
     .logged-in{ 'ng-if' => 'user.id' }
       %img{ 'ng-src' => '{{ user.image.url }}', 'ng-click' => 'toggleInfo($event)' }
 
-    .not-logged-in{ 'ng-if' => '! user.id' }
+    .not-logged-in{ 'ng-if' => '! user.id', 'ng-click' => 'signIn()' }
       %i.fa.fa-user
 
   .info{ 'ng-show' => 'showInfo', 'ng-click' => '$event.stopPropagation()' }

@@ -34,6 +34,10 @@
       }
     };
 
+    $scope.signIn = function() {
+      client.signIn();
+    };
+
     $scope.signOut = function() {
       client.signOut();
       $scope.showInfo = false; 
