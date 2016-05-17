@@ -33,6 +33,8 @@ class Output
       Sass.new input
     when /\.js$/
       Javascript.new input
+    when /\.ico$/
+      Image.new input
     end
   end
 end
@@ -123,6 +125,17 @@ class Javascript < Output
   end
 end
 
+class Image < Output
+  def initialize(input)
+    output = File.join($dest, input.sub(File.join($source, ''), ''))
+    super input, output
+  end
+
+  protected
+  def create_command
+    FileUtils.cp @input, @output
+  end
+end
 def report(type, input, output)
   puts <<-eos
   #{File.extname(output.to_s).upcase} #{type} @ #{Time.now.strftime("%F %T")}:
@@ -141,8 +154,9 @@ def ordered(files)
   sass = files.select &of_type('.sass')
   js = files.select &of_type('.js')
   haml = files.select &of_type('.haml')
+  images = files.select &of_type('.ico')
 
-  sass + ordered_js(js) + haml
+  sass + ordered_js(js) + haml + images
 end
 
 def ordered_js(files)
@@ -171,7 +185,7 @@ end
 
 if $serve
   puts "Watching #{$source}"
-  listener = Listen.to($source, :filter => /\.(haml|sass|js)$/, &update)
+  listener = Listen.to($source, :filter => /\.(haml|sass|js|ico)$/, &update)
   listener.start
 
   class NoCacheFileHandler < WEBrick::HTTPServlet::FileHandler
@@ -188,6 +202,6 @@ if $serve
   server.start
 else
   puts "Updating #{$source}"
-  update[Dir[File.join($source, '**/*.{haml,sass,js}')], [], []]
+  update[Dir[File.join($source, '**/*.{haml,sass,js,ico}')], [], []]
 end
 
