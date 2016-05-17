@@ -35,6 +35,29 @@
   size: auto;
   margin: 0.5in; }
 
+/* /home/ryan/github/meramec/report/app/stylesheets/tooltip.sass */
+[tooltip]:hover:after {
+  position: absolute;
+  transform: translate(-160px, 20px);
+  width: 180px;
+  padding: 10px;
+  background: #333333;
+  background: rgba(0, 0, 0, 0.8);
+  font-size: small;
+  color: white;
+  content: attr(tooltip); }
+
+[tooltip]:hover:before {
+  position: absolute;
+  transform: translate(0px, 21.7px);
+  width: 0;
+  height: 0;
+  border: solid transparent;
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: #333333;
+  border-width: 8px;
+  content: " "; }
+
 /* /home/ryan/github/meramec/report/app/stylesheets/modal.sass */
 @keyframes fadeIn {
   from {
@@ -216,35 +239,6 @@
     background-color: #efefef; }
   .table .data .row:hover {
     background-color: lightgrey; }
-.table .details {
-  display: inline-block; }
-  .table .details .link.active {
-    color: black;
-    outline: solid thin #eeeeee;
-    outline-offset: 20px; }
-  .table .details .worksheet {
-    font-size: default;
-    font-weight: normal;
-    background-color: white;
-    box-shadow: 1px 2px 4px #dddddd;
-    padding: 20px;
-    position: absolute;
-    transform: translate(-20px, 4px); }
-    .table .details .worksheet .row {
-      margin: 6px 0px 0px 2px;
-      overflow: auto; }
-      .table .details .worksheet .row .header {
-        width: 200px;
-        text-align: left;
-        margin-right: 2px;
-        overflow: hidden;
-        text-overflow: ellipsis; }
-      .table .details .worksheet .row .value {
-        width: 30px;
-        text-align: right; }
-    .table .details .worksheet .column {
-      padding: 0px;
-      margin-top: -2px; }
 
 @media screen {
   .row-report {

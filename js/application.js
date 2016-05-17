@@ -460,28 +460,52 @@
       $scope.rowReport = [];
 
       _.each($scope.spreadsheet.worksheets, function(worksheet) {
+        var row = forWorksheet(worksheet);
+        if(! row) { return; }
+
+        var report = {
+          name: worksheet.name,
+          columns: []
+        };
+
+        $scope.rowReport.push(report);
+
+        _.each(_.tail(worksheet.headers, 1), function(header, j) {
+          report.columns.push(row(header, j + 1));
+        });
+      });
+    });
+
+    function forWorksheet(worksheet) {
+      if($scope.row === 'all/totals') {
+        return totalsReport(worksheet.data);
+      }
+      else {
         var row = _.find(worksheet.data, function(row) {
           return row[0] === $scope.row;
         });
-
         if(row) {
-          var report = {
-            name: worksheet.name,
-            columns: []
-          };
-
-          $scope.rowReport.push(report);
-
-          _.each(_.tail(worksheet.headers, 1), function(header, j) {
-            report.columns.push({
-              name: header,
-              value: row[j+1]
-            });
-          });
+          return singleRowReport(row);
         }
-      });
+      }
+    }
 
-    });
+    function singleRowReport(row) {
+      return function(header, j) {
+        return {
+          name: header,
+          value: row[j]
+        };
+      };
+    }
+    function totalsReport(data) {
+      return function(header, j) {
+        return {
+          name: header,
+          value: _.filter(data, function(row) { return row[j] }).length
+        }
+      }
+    }
   }
 
 })();
@@ -503,12 +527,16 @@
   function AppTitleController($scope, $window, path) {
 
     function updateTitle(path) {
+      var displayPath = _.map(path.split('/'), function(part) {
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      }).join(' | ');
+
       var components = [ $scope.report.title, $scope.report.subtitle ];
       if($scope.id)
-        components.push(path);
+        components.push(displayPath);
 
       $window.document.title = _.compact(components).join(' | ');
-      $scope.path = path;
+      $scope.path = displayPath;
     }
 
     updateTitle(path.get());
@@ -588,6 +616,10 @@
 
     $scope.goHome = function() {
       path.set('/');
+    };
+
+    $scope.totalsView = function() {
+      path.set('/all/totals')
     };
 
     $scope.chooseFile = function() {
@@ -753,10 +785,10 @@
     });
 
     $scope.toggleInfo = function(e) {
-      e.stopPropagation();
       $scope.showInfo = ! $scope.showInfo;
 
       if($scope.showInfo) {
+        e.stopPropagation();
         toggleUnique.onClickOff(function() {
           $scope.showInfo = false;
           $timeout(function() {
@@ -888,46 +920,6 @@
       if($scope.spreadsheet && $scope.spreadsheet.worksheets)
         return $scope.spreadsheet.worksheets[0]; 
     }
-  }
-})();
-
-// /home/ryan/github/meramec/report/app/js/reportGenerator/details.js
-(function() {
-  angular.module('report.generator').directive('details', details);
-  angular.module('report.generator').controller('DetailsController', ['$scope', '$timeout', 'toggleUnique', DetailsController]);
-
-  function details() {
-    return {
-      restrict: 'E',
-      replace: true,
-      templateUrl: 'templates/reportGenerator/details.html',
-      controller: 'DetailsController'
-    };
-  }
-
-  function DetailsController($scope, $timeout, toggleUnique) {
-    $scope.worksheet.details =  _.map(_.tail($scope.worksheet.headers, 1), function(name, j) {
-      var entries = _.filter($scope.worksheet.data, function(row) {
-        return row[j+1];
-      });
-
-      return {name: name, value: entries.length};
-    });
-
-    $scope.onClick = function(e) {
-      e.stopPropagation();
-
-      $scope.showDetails = ! $scope.showDetails;
-
-      if($scope.showDetails) {
-        toggleUnique.onClickOff(function() {
-          $scope.showDetails = false;
-          $timeout(function() {
-            $scope.$digest();
-          });
-        });
-      }
-    };
   }
 })();
 
