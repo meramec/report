@@ -1,2 +1,5 @@
-%span.editable{ 'contenteditable' => '', 'ng-keydown' => 'onKeyDown($event)', 'ng-keyup' => 'onKeyUp($event)', 'ng-paste' => 'onPaste($event)', 'ng-focus' => 'onFocus($event)', 'ng-blur' => 'onBlur($event)' }
-  {{ report[key] }}
+.editable
+  %span{ 'ng-attr-contenteditable' => '{{editable || undefined}}', 'ng-keydown' => 'onKeyDown($event)', 'ng-keyup' => 'onKeyUp($event)', 'ng-focus' => 'onFocus($event)', 'ng-blur' => 'onBlur($event)' }
+    {{ report[key] }}
+  .link{ 'ng-click' => 'makeEditable()' }
+    %i.fa.fa-pencil-square-o

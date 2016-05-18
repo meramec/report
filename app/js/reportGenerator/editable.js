@@ -1,14 +1,21 @@
 (function() {
-  angular.module('report.generator').directive('editable', editable);
+  angular.module('report.generator').directive('editable', ['$timeout', editable]);
   angular.module('report.generator').controller('EditableController', ['$scope', '$attrs', EditableController]);
 
-  function editable() {
+  function editable($timeout) {
     return {
       restrict: 'E',
       replace: true,
       templateUrl: 'templates/reportGenerator/editable.html',
       controller: 'EditableController',
-      scope: true
+      scope: true,
+      link: function(scope, element) {
+        scope.focus = function() {
+          $timeout(function() {
+            element.find('span')[0].focus();
+          });
+        };
+      }
     };
   }
 
@@ -16,7 +23,10 @@
 
     $scope.key = $attrs.key;
 
-    var editing = false;
+    $scope.makeEditable = function() {
+      $scope.editable = true;
+      $scope.focus();
+    };
 
     $scope.onKeyUp = function(e) {
       var code = e.keyCode || e.which;
@@ -32,16 +42,13 @@
       }
     }
 
-    $scope.onPaste = function() {
-
-    }
-
     $scope.onFocus = function(e) {
       selectAll(e.target);
     }
 
     $scope.onBlur = function(e) {
       angular.element(e.target).text($scope.report[$scope.key]);
+      $scope.editable = false;
     }
 
     function save(e) {

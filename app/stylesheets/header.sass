@@ -7,7 +7,12 @@
     background-color: #efefef
     box-shadow: 0px 2px 2px #ddd
     .editable
-      cursor: pointer
+      display: inline
+      [contenteditable]
+        cursor: pointer
+      .link
+        font-size: 0.8em
+        display: inline-block
 
   .title
     padding: 6px 0px 4px 0px
