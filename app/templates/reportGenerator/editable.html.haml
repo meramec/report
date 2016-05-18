@@ -1,5 +1,5 @@
 .editable
   %span{ 'ng-attr-contenteditable' => '{{editable || undefined}}', 'ng-keydown' => 'onKeyDown($event)', 'ng-keyup' => 'onKeyUp($event)', 'ng-focus' => 'onFocus($event)', 'ng-blur' => 'onBlur($event)' }
     {{ report[key] }}
-  .link{ 'ng-mousedown' => 'onMouseDown()', 'ng-click' => 'onClick()' }
+  .link{ 'ng-class' => '{ disabled: !signedIn }', 'ng-mousedown' => 'onMouseDown()', 'ng-click' => 'onClick()' }
     %i.fa.fa-pencil-square-o

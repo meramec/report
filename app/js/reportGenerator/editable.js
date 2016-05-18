@@ -29,6 +29,9 @@
     };
 
     $scope.onClick = function() {
+      if(! $scope.signedIn)
+        return;
+
       if(clicking) {
         $scope.editable = true;
         $scope.focus();
