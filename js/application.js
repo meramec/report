@@ -21,9 +21,9 @@
 
 // /home/ryan/github/meramec/report/app/js/googleApi/sheets.js
 (function() {
-  angular.module('google.api').service('sheets', ['client', 'latch', '$http', sheets]);
+  angular.module('google.api').service('sheets', ['client', '$http', sheets]);
 
-  function sheets(client, latch, $http) {
+  function sheets(client, $http) {
     var self = this;
 
     self.open = function(id, callback) {
@@ -46,7 +46,7 @@
 
       function onWorksheetList(response) {
         var doc = response.data.feed;
-        var onComplete = latch.create(doc.entry.length);
+        var onComplete = new Latch(doc.entry.length);
 
         onComplete.wait(function() {
           callback({ title: title, worksheets: worksheets });
@@ -100,7 +100,7 @@
 
 // /home/ryan/github/meramec/report/app/js/googleApi/auth.js
 (function() {
-  angular.module('google.api').service('auth', ['client', auth]);
+  angular.module('google.api').factory('auth', ['client', auth]);
 
   var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
   var scopes = [
@@ -111,33 +111,35 @@
   ];
 
   function auth(client) {
-    this.authorize = function(callback) {
-      client.authorization(clientId, scopes).authorize(callback);
+    var authorizer = client.authorization(clientId, scopes);
+    return {
+      authorize: authorizer.authorize,
     };
   }
+
 })();
 
 // /home/ryan/github/meramec/report/app/js/googleApi/drive.js
 (function() {
-  angular.module('google.api').service('drive', ['client', 'latch',  drive]);
+  angular.module('google.api').service('drive', ['client', drive]);
 
-  function drive(client, latch) {
+  function drive(client) {
     var lib = client.load('drive', 'v3');
 
     this.buildTree = function(drive, types) {
       var notify = new Notify();
       lib.start(function() {
-        new BuildTree(drive, types, latch, notify).begin();
+        new BuildTree(drive, types, notify).begin();
       });
 
       return notify;
     }; 
   }
 
-  function BuildTree(drive, types, latch, notify) {
+  function BuildTree(drive, types, notify) {
     var self = this;
 
-    var onComplete = latch.create(2);
+    var onComplete = new Latch(2);
     onComplete.wait(function() {
       notify.onNotifyComplete();
     });
@@ -306,51 +308,14 @@
   }
 })();
 
-// /home/ryan/github/meramec/report/app/js/googleApi/latch.js
-(function() {
-  angular.module('google.api').factory('latch', latch);
-
-  function latch() {
-    return {
-      create: function(n) {
-        return new Latch(n);
-      }
-    };
-  }
-
-  function Latch(n) {
-    var ready = n ? n : 1;
-
-    var calls = [];
-
-    this.ready = function() {
-      if(--ready > 0)
-        return;
-
-      while(calls.length > 0) {
-        var call = calls.shift();
-        call();
-      }
-    };
-
-    this.wait = function(fn) {
-      if(ready == 0) {
-        fn();
-      } else {
-        calls.push(fn);
-      }
-    };
-  }
-})();
-
 // /home/ryan/github/meramec/report/app/js/googleApi/client.js
 (function() {
-  angular.module('google.api').service('client', ['$window', '$document', '$http', 'latch', client]);
+  angular.module('google.api').service('client', ['$window', '$document', '$http', client]);
 
-  function client($window, $document, $http, latch) {
+  function client($window, $document, $http) {
 
-    var clientLoaded = latch.create();
-    var authorized = latch.create();
+    var clientLoaded = new Latch();
+    var authorized = new Latch();
 
     var authorization;
 
@@ -363,9 +328,7 @@
     $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
-      authorization = new Authorization(clientId, scopes);
-
-      return authorization;
+      return new Authorizer(clientId, scopes);
     };
 
     this.authToken = function() {
@@ -376,45 +339,59 @@
       return new Library(lib, version);
     };
 
-    this.signIn = function() {
-      authorization.authorize(function() {});
-    };
-
-    this.signOut = function() {
-      var auth = gapi.auth2.getAuthInstance();
-      auth.signOut();
-    };
-
-    function Authorization(clientId, scopes) {
+    function Authorizer(clientId, scopes) {
       var self = this;
+
+      var onAuthLoaded = new Latch();
+
       var options = {
         client_id: clientId,
         scope: scopes.join(' '),
         immediate: true
       };
 
-      this.authorize = function(callback) {
+      this.authorize = function(onSignedIn, onSignedOut) {
         clientLoaded.wait(function() {
           gapi.load('auth2', function() {
             gapi.auth2.init(options).then(function() {
-              var auth = gapi.auth2.getAuthInstance();
-              if(auth.isSignedIn.get()) {
-                authorized.ready();
-                callback();
-              } else {
-                auth.signIn().then(function() {
-                  authorized.ready();
-                  callback();
-                });
-              }
-
-              auth.isSignedIn.listen(function() {
-
-              });
+              onAuthLoaded.ready();
             });
           });
         });
+
+        return new SignIn(onAuthLoaded, onSignedIn, onSignedOut);
       };
+    }
+
+    function SignIn(onAuthLoaded, onSignedIn, onSignedOut) {
+
+      var auth;
+
+      onAuthLoaded.wait(function() {
+        auth = gapi.auth2.getAuthInstance();
+        if(auth.isSignedIn.get()) {
+          notifySignedIn();
+        } else {
+          onSignedOut();
+        }
+      });
+
+      this.signIn = function() {
+        onAuthLoaded.wait(function() {
+          auth.signIn().then(notifySignedIn);
+        });
+      };
+
+      this.signOut = function() {
+        onAuthLoaded.wait(function() {
+          auth.signOut().then(onSignedOut);
+        });
+      };
+
+      function notifySignedIn() {
+        authorized.ready();
+        onSignedIn();
+      }
     }
 
     function AuthToken() {
@@ -428,7 +405,7 @@
     }
 
     function Library(lib, version) {
-      var libraryLoaded = latch.create();
+      var libraryLoaded = new Latch();
 
       authorized.wait(function() {
         gapi.client.load(lib, version, function() {
@@ -576,12 +553,13 @@
     });
 
     $scope.$watch('id', function() {
-      if(! $scope.id)
-        return;
-
-      sheets.open($scope.id, function(spreadsheet) {
-        $scope.spreadsheet = spreadsheet;
-      });
+      if($scope.id) {
+        sheets.open($scope.id, function(spreadsheet) {
+          $scope.spreadsheet = spreadsheet;
+        });
+      } else {
+        $scope.spreadsheet = undefined;
+      }
     });
 
     $scope.onClick = function(row) {
@@ -596,7 +574,7 @@
 // /home/ryan/github/meramec/report/app/js/reportGenerator/report.js
 (function() {
   angular.module('report.generator').directive('report', report);
-  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'metadata', 'auth', ReportController]);
+  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'metadata', ReportController]);
 
   function report() {
     return {
@@ -607,20 +585,25 @@
     };
   }
 
-  function ReportController($scope, $window, path, metadata, auth) {
+  function ReportController($scope, $window, path, metadata) {
 
     $scope.report = {};
-    $scope.id = localStorage.getItem('id');
+    $scope.signedIn = false;
 
     metadata.watch($scope);
 
-    auth.authorize(onReady);
-
-    function onReady() {
-      $scope.$broadcast('authenticated');
+    $scope.$on('signed-in', function() {
+      $scope.signedIn = true;
+      $scope.id = localStorage.getItem('id');
       if(! $scope.id)
-        $scope.$broadcast('choose-file');
-    }
+        $scope.chooseFile();
+    });
+
+    $scope.$on('signed-out', function() {
+      $scope.signedIn = false;
+      $scope.id = undefined;
+      $scope.goHome();
+    });
 
     $scope.goHome = function() {
       path.set('/');
@@ -706,16 +689,23 @@
 
 // /home/ryan/github/meramec/report/app/js/reportGenerator/editable.js
 (function() {
-  angular.module('report.generator').directive('editable', editable);
+  angular.module('report.generator').directive('editable', ['$timeout', editable]);
   angular.module('report.generator').controller('EditableController', ['$scope', '$attrs', EditableController]);
 
-  function editable() {
+  function editable($timeout) {
     return {
       restrict: 'E',
       replace: true,
       templateUrl: 'templates/reportGenerator/editable.html',
       controller: 'EditableController',
-      scope: true
+      scope: true,
+      link: function(scope, element) {
+        scope.focus = function() {
+          $timeout(function() {
+            element.find('span')[0].focus();
+          });
+        };
+      }
     };
   }
 
@@ -723,7 +713,21 @@
 
     $scope.key = $attrs.key;
 
-    var editing = false;
+    var clicking;
+    $scope.onMouseDown = function() {
+      clicking = true;
+    };
+
+    $scope.onClick = function() {
+      if(! $scope.signedIn)
+        return;
+
+      if(clicking) {
+        $scope.editable = true;
+        $scope.focus();
+        clicking = false;
+      }
+    };
 
     $scope.onKeyUp = function(e) {
       var code = e.keyCode || e.which;
@@ -739,16 +743,14 @@
       }
     }
 
-    $scope.onPaste = function() {
-
-    }
-
     $scope.onFocus = function(e) {
       selectAll(e.target);
     }
 
     $scope.onBlur = function(e) {
       angular.element(e.target).text($scope.report[$scope.key]);
+      $scope.editable = false;
+      clicking = false;
     }
 
     function save(e) {
@@ -772,7 +774,7 @@
 // /home/ryan/github/meramec/report/app/js/reportGenerator/user.js
 (function() {
   angular.module('report.generator').directive('user', user);
-  angular.module('report.generator').controller('UserController', ['$scope', '$timeout', 'me', 'client', 'toggleUnique', UserController]);
+  angular.module('report.generator').controller('UserController', ['$scope', '$timeout', 'me', 'auth', 'toggleUnique', UserController]);
 
   function user() {
     return {
@@ -784,13 +786,24 @@
     };
   }
 
-  function UserController($scope, $timeout, me, client, toggleUnique) {
-    $scope.$on('authenticated', function() {
+  function UserController($scope, $timeout, me, auth, toggleUnique) {
+
+    var authorizer = auth.authorize(onSignedIn, onSignedOut);
+
+    function onSignedIn() {
       me.load(function(user) {
         $scope.user = user;
         $scope.$digest();
+
+        $scope.$emit('signed-in');
       });
-    });
+    }
+    function onSignedOut() {
+      $scope.user = undefined;
+      $scope.$digest();
+
+      $scope.$emit('signed-out');
+    }
 
     $scope.toggleInfo = function(e) {
       $scope.showInfo = ! $scope.showInfo;
@@ -807,11 +820,11 @@
     };
 
     $scope.signIn = function() {
-      client.signIn();
+      authorizer.signIn();
     };
 
     $scope.signOut = function() {
-      client.signOut();
+      authorizer.signOut();
       $scope.showInfo = false; 
     };
 
@@ -934,6 +947,31 @@
     }
   }
 })();
+
+// /home/ryan/github/meramec/report/app/js/lib/latch.js
+function Latch(n) {
+  var ready = n ? n : 1;
+
+  var calls = [];
+
+  this.ready = function() {
+    if(--ready > 0)
+      return;
+
+    while(calls.length > 0) {
+      var call = calls.shift();
+      call();
+    }
+  };
+
+  this.wait = function(fn) {
+    if(ready == 0) {
+      fn();
+    } else {
+      calls.push(fn);
+    }
+  };
+}
 
 // /home/ryan/github/meramec/report/app/js/picker/recentFiles.js
 (function() {

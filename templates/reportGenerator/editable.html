@@ -1,3 +1,8 @@
-<span class='editable' contenteditable='' ng-blur='onBlur($event)' ng-focus='onFocus($event)' ng-keydown='onKeyDown($event)' ng-keyup='onKeyUp($event)' ng-paste='onPaste($event)'>
-  {{ report[key] }}
-</span>
+<div class='editable'>
+  <span ng-attr-contenteditable='{{editable || undefined}}' ng-blur='onBlur($event)' ng-focus='onFocus($event)' ng-keydown='onKeyDown($event)' ng-keyup='onKeyUp($event)'>
+    {{ report[key] }}
+  </span>
+  <div class='link' ng-class='{ disabled: !signedIn }' ng-click='onClick()' ng-mousedown='onMouseDown()'>
+    <i class='fa fa-pencil-square-o'></i>
+  </div>
+</div>

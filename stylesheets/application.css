@@ -36,7 +36,7 @@
   margin: 0.5in; }
 
 /* /home/ryan/github/meramec/report/app/stylesheets/tooltip.sass */
-[tooltip]:hover:after {
+[tooltip]:not(.disabled):hover:after {
   position: absolute;
   transform: translate(-160px, 20px);
   width: 180px;
@@ -47,7 +47,7 @@
   color: white;
   content: attr(tooltip); }
 
-[tooltip]:hover:before {
+[tooltip]:not(.disabled):hover:before {
   position: absolute;
   transform: translate(0px, 21.7px);
   width: 0;
@@ -109,7 +109,12 @@
       background-color: #efefef;
       box-shadow: 0px 2px 2px #dddddd; }
       .header-banner .editable {
-        cursor: pointer; } }
+        display: inline; }
+        .header-banner .editable [contenteditable] {
+          cursor: pointer; }
+        .header-banner .editable .link {
+          font-size: 0.8em;
+          display: inline-block; } }
   .header-banner .title {
     padding: 6px 0px 4px 0px;
     font-size: 2.2em;
@@ -123,6 +128,8 @@
         color: white;
         background-color: #444466;
         box-shadow: 0px 2px 2px #444466; } }
+    .header-banner .title .link.disabled {
+      color: #bbbbbb; }
   .header-banner .subtitle {
     padding: 6px 30px 6px 0px;
     font-size: 1.4em;
@@ -139,7 +146,7 @@
       font-size: 0.8em;
       padding: 8px;
       border-color: #dddddd; }
-      .header-banner .subtitle .link.round:hover {
+      .header-banner .subtitle .link.round:not(.disabled):hover {
         background-color: #dddddd; }
   .header-banner .user {
     padding-right: 32px;
@@ -301,15 +308,18 @@ body {
   float: right; }
 
 .link {
-  cursor: pointer;
   padding-left: 8px;
-  color: gray; }
+  color: gray;
+  cursor: pointer; }
   .link.round {
     border-radius: 50%;
     border-style: solid;
     border-width: thin; }
   .link:not(.disabled):hover {
     color: black; }
+  .link.disabled {
+    color: lightgrey;
+    cursor: default; }
 
 .vertical {
   height: 100%;
