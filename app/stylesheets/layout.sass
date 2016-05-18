@@ -18,9 +18,9 @@ body
   float: right
 
 .link
-  cursor: pointer
   padding-left: 8px
   color: gray
+  cursor: pointer
   &.round
     border-radius: 50%
     border-style: solid
@@ -28,6 +28,11 @@ body
 
   &:not(.disabled):hover
     color: black
+
+  &.disabled
+    color: lightgray
+    cursor: default
+
 
 .vertical
   height: 100%

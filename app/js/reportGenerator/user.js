@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('user', user);
-  angular.module('report.generator').controller('UserController', ['$scope', '$timeout', 'me', 'client', 'toggleUnique', UserController]);
+  angular.module('report.generator').controller('UserController', ['$scope', '$timeout', 'me', 'auth', 'toggleUnique', UserController]);
 
   function user() {
     return {
@@ -12,13 +12,24 @@
     };
   }
 
-  function UserController($scope, $timeout, me, client, toggleUnique) {
-    $scope.$on('authenticated', function() {
+  function UserController($scope, $timeout, me, auth, toggleUnique) {
+
+    var authorizer = auth.authorize(onSignedIn, onSignedOut);
+
+    function onSignedIn() {
       me.load(function(user) {
         $scope.user = user;
         $scope.$digest();
+
+        $scope.$emit('signed-in');
       });
-    });
+    }
+    function onSignedOut() {
+      $scope.user = undefined;
+      $scope.$digest();
+
+      $scope.$emit('signed-out');
+    }
 
     $scope.toggleInfo = function(e) {
       $scope.showInfo = ! $scope.showInfo;
@@ -35,11 +46,11 @@
     };
 
     $scope.signIn = function() {
-      client.signIn();
+      authorizer.signIn();
     };
 
     $scope.signOut = function() {
-      client.signOut();
+      authorizer.signOut();
       $scope.showInfo = false; 
     };
 

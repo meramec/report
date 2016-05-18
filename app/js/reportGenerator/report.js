@@ -1,6 +1,6 @@
 (function() {
   angular.module('report.generator').directive('report', report);
-  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'metadata', 'auth', ReportController]);
+  angular.module('report.generator').controller('ReportController', ['$scope', '$window', 'path', 'metadata', ReportController]);
 
   function report() {
     return {
@@ -11,20 +11,25 @@
     };
   }
 
-  function ReportController($scope, $window, path, metadata, auth) {
+  function ReportController($scope, $window, path, metadata) {
 
     $scope.report = {};
-    $scope.id = localStorage.getItem('id');
+    $scope.signedIn = false;
 
     metadata.watch($scope);
 
-    auth.authorize(onReady);
-
-    function onReady() {
-      $scope.$broadcast('authenticated');
+    $scope.$on('signed-in', function() {
+      $scope.signedIn = true;
+      $scope.id = localStorage.getItem('id');
       if(! $scope.id)
-        $scope.$broadcast('choose-file');
-    }
+        $scope.chooseFile();
+    });
+
+    $scope.$on('signed-out', function() {
+      $scope.signedIn = false;
+      $scope.id = undefined;
+      $scope.goHome();
+    });
 
     $scope.goHome = function() {
       path.set('/');

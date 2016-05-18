@@ -1,4 +1,4 @@
-[tooltip]:hover:after
+[tooltip]:not(.disabled):hover:after
   position: absolute
   transform: translate(-160px, 20px)
   width: 180px
@@ -9,7 +9,7 @@
   color: white
   content: attr(tooltip)
 
-[tooltip]:hover:before
+[tooltip]:not(.disabled):hover:before
   position: absolute
   transform: translate(0px, 21.7px)
   width: 0

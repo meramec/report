@@ -17,9 +17,7 @@
     $document[0].body.appendChild(clientjs);
 
     this.authorization = function(clientId, scopes) {
-      authorization = new Authorization(clientId, scopes);
-
-      return authorization;
+      return new Authorizer(clientId, scopes);
     };
 
     this.authToken = function() {
@@ -30,45 +28,59 @@
       return new Library(lib, version);
     };
 
-    this.signIn = function() {
-      authorization.authorize(function() {});
-    };
-
-    this.signOut = function() {
-      var auth = gapi.auth2.getAuthInstance();
-      auth.signOut();
-    };
-
-    function Authorization(clientId, scopes) {
+    function Authorizer(clientId, scopes) {
       var self = this;
+
+      var onAuthLoaded = new Latch();
+
       var options = {
         client_id: clientId,
         scope: scopes.join(' '),
         immediate: true
       };
 
-      this.authorize = function(callback) {
+      this.authorize = function(onSignedIn, onSignedOut) {
         clientLoaded.wait(function() {
           gapi.load('auth2', function() {
             gapi.auth2.init(options).then(function() {
-              var auth = gapi.auth2.getAuthInstance();
-              if(auth.isSignedIn.get()) {
-                authorized.ready();
-                callback();
-              } else {
-                auth.signIn().then(function() {
-                  authorized.ready();
-                  callback();
-                });
-              }
-
-              auth.isSignedIn.listen(function() {
-
-              });
+              onAuthLoaded.ready();
             });
           });
         });
+
+        return new SignIn(onAuthLoaded, onSignedIn, onSignedOut);
       };
+    }
+
+    function SignIn(onAuthLoaded, onSignedIn, onSignedOut) {
+
+      var auth;
+
+      onAuthLoaded.wait(function() {
+        auth = gapi.auth2.getAuthInstance();
+        if(auth.isSignedIn.get()) {
+          notifySignedIn();
+        } else {
+          onSignedOut();
+        }
+      });
+
+      this.signIn = function() {
+        onAuthLoaded.wait(function() {
+          auth.signIn().then(notifySignedIn);
+        });
+      };
+
+      this.signOut = function() {
+        onAuthLoaded.wait(function() {
+          auth.signOut().then(onSignedOut);
+        });
+      };
+
+      function notifySignedIn() {
+        authorized.ready();
+        onSignedIn();
+      }
     }
 
     function AuthToken() {

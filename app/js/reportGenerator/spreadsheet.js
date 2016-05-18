@@ -21,12 +21,13 @@
     });
 
     $scope.$watch('id', function() {
-      if(! $scope.id)
-        return;
-
-      sheets.open($scope.id, function(spreadsheet) {
-        $scope.spreadsheet = spreadsheet;
-      });
+      if($scope.id) {
+        sheets.open($scope.id, function(spreadsheet) {
+          $scope.spreadsheet = spreadsheet;
+        });
+      } else {
+        $scope.spreadsheet = undefined;
+      }
     });
 
     $scope.onClick = function(row) {

@@ -1,5 +1,5 @@
 (function() {
-  angular.module('google.api').service('auth', ['client', auth]);
+  angular.module('google.api').factory('auth', ['client', auth]);
 
   var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
   var scopes = [
@@ -10,8 +10,10 @@
   ];
 
   function auth(client) {
-    this.authorize = function(callback) {
-      client.authorization(clientId, scopes).authorize(callback);
+    var authorizer = client.authorization(clientId, scopes);
+    return {
+      authorize: authorizer.authorize,
     };
   }
+
 })();
