@@ -23,9 +23,17 @@
 
     $scope.key = $attrs.key;
 
-    $scope.makeEditable = function() {
-      $scope.editable = true;
-      $scope.focus();
+    var clicking;
+    $scope.onMouseDown = function() {
+      clicking = true;
+    };
+
+    $scope.onClick = function() {
+      if(clicking) {
+        $scope.editable = true;
+        $scope.focus();
+        clicking = false;
+      }
     };
 
     $scope.onKeyUp = function(e) {
@@ -49,6 +57,7 @@
     $scope.onBlur = function(e) {
       angular.element(e.target).text($scope.report[$scope.key]);
       $scope.editable = false;
+      clicking = false;
     }
 
     function save(e) {
