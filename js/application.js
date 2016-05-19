@@ -106,7 +106,7 @@
   var scopes = [
     'https://www.googleapis.com/auth/plus.me',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/drive.metadata.readonly',
+    'https://www.googleapis.com/auth/drive.metadata',
     'https://spreadsheets.google.com/feeds'
   ];
 
@@ -286,6 +286,33 @@
     }
   }
 
+})();
+
+// /home/ryan/github/meramec/report/app/js/googleApi/appProperties.js
+(function() {
+  angular.module('google.api').service('appProperties', ['client', appProperties]);
+
+  function appProperties(client) {
+    var lib = client.load('drive', 'v3');
+
+    this.get = function(id, callback) {
+      lib.start(function() {
+        var request = gapi.client.drive.files.get({fileId: id, fields: 'appProperties'});
+        request.execute(function(data) {
+          callback(data.result.appProperties);
+        });
+      });
+    };
+
+    this.set = function(id, data, callback) {
+      lib.start(function() {
+        var request = gapi.client.drive.files.update({fileId: id, appProperties: data});
+        request.execute(function(response) {
+          callback();
+        });
+      });
+    };
+  }
 })();
 
 // /home/ryan/github/meramec/report/app/js/googleApi/me.js
@@ -630,19 +657,9 @@
 
 // /home/ryan/github/meramec/report/app/js/reportGenerator/metadata.js
 (function() {
-  angular.module('report.generator').service('metadata', metadata);
+  angular.module('report.generator').service('metadata', ['appProperties', metadata]);
 
-  function metadata() {
-
-    var raw = localStorage.getItem('metadata');
-    var parsed;
-
-    try {
-      parsed = JSON.parse(raw);
-    } catch(e) { }
-
-    if(! parsed)
-      parsed = {};
+  function metadata(appProperties) {
 
     this.watch = function(scope) {
       onIdChange(scope);
@@ -656,10 +673,12 @@
     }
 
     function onIdChange(scope) {
-      var md = scope.id && parsed[scope.id];
-
-      updateReport(scope.report, md, 'title');
-      updateReport(scope.report, md, 'subtitle');
+      if(scope.id) {
+        appProperties.get(scope.id, function(data) {
+          updateReport(scope.report, data, 'title');
+          updateReport(scope.report, data, 'subtitle');
+        });
+      }
     }
 
     function updateReport(report, md, key) {
@@ -674,14 +693,12 @@
       if(! scope.id)
         return;
 
-      var md = parsed[scope.id];
-      if(! md)
-        md = parsed[scope.id] = {};
+      var md = {
+        title: scope.report.title,
+        subtitle: scope.report.subtitle
+      };
 
-      md.title = scope.report.title;
-      md.subtitle = scope.report.subtitle;
-
-      localStorage.setItem('metadata', JSON.stringify(parsed));
+      appProperties.set(scope.id, md, function() {});
     }
   }
 
