@@ -32,6 +32,9 @@ task :package do
     sh 'git rm -rf *'
   end
   sh './build.rb --dist'
+end
+
+task :publish => [:package] do
   Dir.chdir('dist') do
     sh 'git add --all .'
     sh "git commit -m 'Deploy to Github Pages: #{sha}'"
