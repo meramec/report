@@ -5,7 +5,7 @@
   var scopes = [
     'https://www.googleapis.com/auth/plus.me',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/drive.metadata.readonly',
+    'https://www.googleapis.com/auth/drive.metadata',
     'https://spreadsheets.google.com/feeds'
   ];
 
