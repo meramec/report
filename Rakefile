@@ -13,11 +13,11 @@ end
 directory 'public'
 
 task build: ['public'] do
-  sh './build.rb'
+  sh 'fangorn -Jvendor=node_modules'
 end
 
 task serve: [:build] do
-  sh './build.rb --serve' 
+  sh 'fangorn -Jvendor=node_modules --serve'
 end
 
 task :package do
@@ -31,7 +31,7 @@ task :package do
     sh 'git reset --hard origin/gh-pages'
     sh 'git rm -rf *'
   end
-  sh './build.rb --dist'
+  sh 'fangorn -Jvendor=node_modules --dist'
 end
 
 task :publish => [:package] do
